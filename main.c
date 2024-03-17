@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2024/03/16 19:26:01 by eguelin          ###   ########.fr       */
+/*   Updated: 2024/03/17 19:55:31 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,46 +15,51 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "libasm.h"
+#include "libasm_bonus.h"
 
 int main(int argc, char const **argv)
 {
-	printf("return %ld\n", ft_write(1, "Hello World!\n", 13));
-	perror("errno");
+// 	printf("ft_write(1, \"Hello World!\\n\", 13) = %ld\n", ft_write(1, "Hello World!\n", 13));
+// 	perror("errno");
 
-	printf("return %ld\n", ft_write(-1, "Hello World!\n", 13));
-	perror("errno");
+// 	printf("ft_write(-1, \"Hello World!\\n\", 13) = %ld\n", ft_write(-1, "Hello World!\n", 13));
+// 	perror("errno");
 
-	int	fd = open("main.c", O_RDONLY);
+// 	errno = 0;
 
-	char	buf[5000];
+// 	int	fd = open("main.c", O_RDONLY);
 
-	ssize_t	size = ft_read(fd, buf, 5000);
-	perror("errno");
-	if (size == 5000)
-		buf[size - 1] = '\0';
-	else
-		buf[size] = '\0';
+// 	char	buf[891];
 
-	close (fd);
+// 	ssize_t	size = ft_read(fd, buf, 891);
+// 	if (size == 891)
+// 		buf[size - 1] = '\0';
+// 	else
+// 		buf[size] = '\0';
 
-	printf("return %ld\n", size);
-	printf("%s\n", buf);
+// 	close (fd);
 
-	printf("return %ld\n", ft_read(-1, buf, 5000));
-	perror("errno");
+// 	printf("tf_read(fd, buf, 891) = %ld\n", size);
+// 	perror("errno");
+// 	printf("%s\n", buf);
 
-	printf("return %ld\n", ft_strlen(""));
+// 	printf("ft_read(-1, buf, 891) = %ld\n", ft_read(-1, buf, 891));
+// 	perror("errno");
 
-	printf("return %d\n", ft_strcmp("kkkkkk0", "kkkkkk"));
+// 	printf("ft_strlen(\"Hello World!\") = %ld\n", ft_strlen("Hello World!"));
 
-	printf("return %s\n", ft_strcpy(buf, "bonjour"));
-	printf("return %s\n", buf);
+// 	printf("ft_strcmp(\"Hello World!\", \"Hello World!\") = %d\n", ft_strcmp("Hello World!", "Hello World!"));
+// 	printf("ft_strcmp(\"Hello World!\", \"Hello World\") = %d\n", ft_strcmp("Hello World!", "Hello World"));
 
-	char	*s = ft_strdup("const char *s");
+// 	printf("ft_strcpy(buf, \"Hello World!\") = %s\n", ft_strcpy(buf, "Hello World!"));
 
-	printf("return %s\n", s);
+// 	char	*s = ft_strdup("const char *s");
 
-	free(s);
+// 	printf("ft_strdup(\"const char *s\") = %s\n", s);
+
+// 	free(s);
+
+	printf("ft_atoi_base(\"-2147483648\", \"0123456789\") = %d\n", ft_atoi_base("-2147483648", "0123456789"));
 
 	return (0);
 }

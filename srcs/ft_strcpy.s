@@ -4,18 +4,20 @@ section .text
 	global ft_strcpy
 
 		ft_strcpy:
-			mov rax, rdi
+			push rdx ; save rdx
+			mov rax, rdi ; return = dest
 
 		loop:
-			mov	dl, byte [rsi]
-			mov byte [rdi], dl
+			mov	dl, [rsi] ; dl = *src
+			mov [rdi], dl ; *dest = *src
 
-			test dl, dl
+			test dl, dl ; if (*src == 0)
 			jz return
 
-			inc rdi
-			inc rsi
+			inc rdi ; dest++
+			inc rsi ; src++
 			jmp loop
 
 		return:
+			pop rdx ; restore rdx
 			ret

@@ -5,20 +5,20 @@ section .text
 	extern __errno_location
 
 		ft_read:
-			mov rax, 0
+			mov rax, 0 ; syscall number for read
 			syscall
 
-			cmp rax, 0
+			cmp rax, 0 ; check for error
 			jl errno
 
 			ret
 
 		errno:
-			mov rdi, rax
-			call __errno_location wrt ..plt
+			mov rdi, rax ;save error code
+			call __errno_location wrt ..plt ;get errno location
 
-			neg rdi
-			mov dword [rax], edi
+			neg rdi ; negate error code
+			mov [rax], edi ; store error code in errno
 
-			mov rax, -1
+			mov rax, -1 ; return -1
 			ret

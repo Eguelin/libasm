@@ -7,23 +7,22 @@ section .text
 	extern ft_strcpy
 
 		ft_strdup:
-			push rdi
+			push rdi ; save pointer to string
 
-			call ft_strlen
-			add rax, 1
+			call ft_strlen ; ft_strlen(rdi)
+			add rax, 1 ; length++
 
-			mov rdi, rax
-			call malloc wrt ..plt
+			mov rdi, rax ; rdi = length
+			call malloc wrt ..plt ; malloc(rdi)
 
-			test rax, rax
+			test rax, rax ; check if malloc failed
 			jz return
 
-			pop rdi
+			pop rdi ; restore pointer to string
 
-			mov rsi, rdi
-			mov rdi, rax
-
-			call ft_strcpy
+			mov rsi, rdi ; rsi = s
+			mov rdi, rax ; rdi = malloc(length)
+			call ft_strcpy ; ft_strcpy(rdi, rsi)
 
 		return:
 			ret

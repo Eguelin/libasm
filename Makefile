@@ -6,7 +6,7 @@
 #    By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/15 18:40:32 by eguelin           #+#    #+#              #
-#    Updated: 2024/03/16 19:27:39 by eguelin          ###   ########.fr        #
+#    Updated: 2024/03/17 19:42:35 by eguelin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,14 +57,15 @@ FULL_CLEAN_MSG	= "$(PURPLE)Full cleaning $(NAME) $(DEFAULT)done on $(YELLOW)$(sh
 #                                    Sources                                   #
 # **************************************************************************** #
 
-ALL_FILES		= ft_read.s \
-				  ft_strcmp.s \
-				  ft_strcpy.s \
-				  ft_strdup.s \
-				  ft_strlen.s \
-				  ft_write.s
+ALL_FILES	= ft_read.s \
+			  ft_strcmp.s \
+			  ft_strcpy.s \
+			  ft_strdup.s \
+			  ft_strlen.s \
+			  ft_write.s \
+			  bonus/ft_atoi_base.s
 
-OBJ_FILES		= $(addprefix $(OBJS_DIR), $(ALL_FILES:.s=.o))
+OBJ_FILES	= $(addprefix $(OBJS_DIR), $(ALL_FILES:.s=.o))
 
 # **************************************************************************** #
 #                                     Rules                                    #
@@ -99,4 +100,4 @@ leaks: all
 	valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --track-origins=yes ./$(EXEC)
 
 $(OBJS_DIR):
-	mkdir -p $@
+	mkdir -p $@/bonus

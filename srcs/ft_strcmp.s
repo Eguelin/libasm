@@ -4,24 +4,21 @@ section .text
 	global ft_strcmp
 
 		ft_strcmp:
-			xor eax, eax
+			mov ah, [rdi] ; ah = *s1
 
-		loop:
-			mov ah, byte [rdi]
-
-			cmp ah, byte [rsi]
+			cmp ah, [rsi] ; if (*s1 == *s2)
 			jne diff
 
-			test ah, ah
+			test ah, ah ; if (*s1 == 0)
 			jz return
 
-			inc rdi
-			inc rsi
-			jmp loop
+			inc rdi ; s1++
+			inc rsi ; s2++
+			jmp ft_strcmp
 
 		diff:
-			sub	ah, byte [rsi]
-			movsx eax, ah
+			sub	ah, [rsi] ; ah = *s1 - *s2
+			movsx eax, ah ; eax = (int)ah
 
 		return:
 			ret
