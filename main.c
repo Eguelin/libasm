@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2024/03/18 16:18:19 by eguelin          ###   ########.fr       */
+/*   Updated: 2024/03/18 17:10:02 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "libasm.h"
-#include "libasm_bonus.h"
 
 int main(int argc, char const **argv)
 {

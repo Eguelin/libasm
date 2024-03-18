@@ -2,6 +2,7 @@
 # define LIBASM_BONUS_H
 
 # include <unistd.h>
+# include "libasm.h"
 
 typedef struct	s_list
 {

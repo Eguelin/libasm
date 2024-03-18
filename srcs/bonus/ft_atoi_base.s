@@ -3,6 +3,7 @@
 section .text
 	global	ft_atoi_base
 	extern	ft_strlen
+
 		ft_atoi_base:
 			push rdi
 
@@ -14,48 +15,93 @@ section .text
 
 			xor eax, eax ; set return value to 0
 
-		check_base:
+		.check_base:
 			cmp edx, 1 ; if (strlen(base) <= 1)
-			jle return
+			jle .end
 
-		start:
 			xor r8, r8 ; r8 = 0
 
-		check_sign:
+		.loop_check:
+			cmp byte [rsi + r8], 0 ; if (base[i] == 0)
+			je .start_atoi
+
+			xor r9, r9 ; r9 = 0
+
+			mov r10b, byte [rsi + r8] ; r10b = base[i]
+
+			cmp r10b, 43 ; if (base[i] == '+')
+			je .end
+
+			cmp r10b, 45 ; if (base[i] == '-')
+			je .end
+
+			cmp r10b, 32 ; if (base[i] == ' ')
+			je .end
+
+			cmp r10b, 9 ; if (base[i] < '\t') else if (base[i] == '\t')
+			jl .loop_check
+			je .end
+
+			cmp r10b, 13 ; if (base[i] <= '\r')
+			jle .end
+
+		.check_duplicate:
+
+			cmp byte [rsi + r9], 0 ; if (base[j] == 0)
+			je .check_duplicate_end
+
+			cmp r9, r8 ; if (j == i)
+			je .check_duplicate_inc
+
+			cmp r10b , byte [rsi + r9] ; if (base[i] == base[j])
+			je .end
+
+		.check_duplicate_inc:
+			inc r9 ; j++
+			jmp .check_duplicate
+
+		.check_duplicate_end:
+			inc r8 ; i++
+			jmp .loop_check
+
+		.start_atoi:
+			xor r8, r8 ; r8 = 0
+
+		.check_sign:
 			cmp byte [rdi], 45 ; if (str[0] == '-')
-			je negative
+			je .negative
 
 			cmp byte [rdi], 43 ; if (str[0] == '+')
-			je positive
+			je .positive
 
-			jmp loop
+			jmp .loop_atoi
 
-		negative:
+		.negative:
 			inc rdi ; str++
 			cmp r8, 1 ; if (r8 == 1)
-			je start
+			je .start_atoi
 			mov r8, 1 ; r8 = 1
-			jmp check_sign
+			jmp .check_sign
 
-		positive:
+		.positive:
 			inc rdi ; str++
-			jmp check_sign
+			jmp .check_sign
 
-		loop:
+		.loop_atoi:
 			xor rcx, rcx ; ecx = 0
 			mov r9b, byte [rdi] ; r9b = *str
 
-		base_loop:
+		.loop_base:
 			cmp r9b, byte [rsi + rcx] ; if (*str == base[i])
-			je base_end
+			je .base_end
 
 			inc rcx ; i++
 			cmp byte [rsi + rcx], 0 ; if (base[i] == 0)
-			je end
+			je .end_atoi
 
-			jmp base_loop
+			jmp .loop_base
 
-		base_end:
+		.base_end:
 			push rdx ; save strlen(base)
 			mul edx; eax *= strlen(base)
 			pop rdx ; restore strlen(base)
@@ -64,13 +110,13 @@ section .text
 			inc rdi ; str++
 
 			cmp byte [rdi], 0 ; if (*str == 0)
-			jne loop
+			jne .loop_atoi
 
-		end:
+		.end_atoi:
 			cmp r8, 1 ; if (r8 == 1)
-			jne return
+			jne .end
 
 			neg eax ; eax = -eax
 
-		return:
+		.end:
 			ret
