@@ -6,7 +6,7 @@
 #    By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/15 18:40:32 by eguelin           #+#    #+#              #
-#    Updated: 2024/03/17 19:42:35 by eguelin          ###   ########.fr        #
+#    Updated: 2024/03/18 16:19:45 by eguelin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,7 @@
 
 NAME		= libasm.a
 EXEC		= run
+EXEC_BONUS	= run_bonus
 OBJS_DIR	= .objs/
 SRCS_DIR	= srcs/
 INCS_DIR	= includes/
@@ -50,6 +51,7 @@ DEFAULT	= \033[0m
 # **************************************************************************** #
 
 COMP_MSG		= "$(GREEN)Compilation $(NAME) $(DEFAULT)done on $(YELLOW)$(shell date +'%Y-%m-%d %H:%M:%S')$(DEFAULT)"
+BONUS_COMP_MSG	= "$(BLUE)Compilation $(NAME) bonus $(DEFAULT)done on $(YELLOW)$(shell date +'%Y-%m-%d %H:%M:%S')$(DEFAULT)"
 CLEAN_MSG		= "$(RED)Cleaning $(NAME) $(DEFAULT)done on $(YELLOW)$(shell date +'%Y-%m-%d %H:%M:%S')$(DEFAULT)"
 FULL_CLEAN_MSG	= "$(PURPLE)Full cleaning $(NAME) $(DEFAULT)done on $(YELLOW)$(shell date +'%Y-%m-%d %H:%M:%S')$(DEFAULT)"
 
@@ -63,9 +65,15 @@ ALL_FILES	= ft_read.s \
 			  ft_strdup.s \
 			  ft_strlen.s \
 			  ft_write.s \
-			  bonus/ft_atoi_base.s
 
-OBJ_FILES	= $(addprefix $(OBJS_DIR), $(ALL_FILES:.s=.o))
+BONUS_DIR	= bonus/
+BONUS_FILES	= ft_atoi_base.s
+
+ALL_BONUS_FILES	= $(addprefix $(BONUS_DIR), $(BONUS_FILES))
+
+OBJS_FILES	= $(addprefix $(OBJS_DIR), $(ALL_FILES:.s=.o))
+
+BONUS_OBJS_FILES	= $(addprefix $(OBJS_DIR), $(ALL_BONUS_FILES:.s=.o))
 
 # **************************************************************************** #
 #                                     Rules                                    #
@@ -73,9 +81,13 @@ OBJ_FILES	= $(addprefix $(OBJS_DIR), $(ALL_FILES:.s=.o))
 
 all: $(NAME)
 
-$(NAME): $(OBJ_FILES)
-	$(ARC) $(NAME) $(OBJ_FILES)
+$(NAME): $(OBJS_FILES)
+	$(ARC) $(NAME) $(OBJS_FILES)
 	echo $(COMP_MSG)
+
+bonus: all $(OBJS_DIR)$(BONUS_DIR) $(BONUS_OBJS_FILES)
+	$(ARC) $(NAME) $(BONUS_OBJS_FILES)
+	echo $(BONUS_COMP_MSG)
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.s | $(OBJS_DIR)
 	$(AS) $(AFLAGS) $< -o $@
@@ -87,6 +99,7 @@ clean:
 fclean: clean
 	$(RM) $(NAME)
 	$(RM) $(EXEC)
+	$(RM) $(EXEC_BONUS)
 	echo $(FULL_CLEAN_MSG)
 
 re: fclean all
@@ -95,9 +108,20 @@ run: all
 	$(CC) main.c $(INC) $(LIB) -o $(EXEC)
 	./$(EXEC)
 
+run_bonus: bonus
+	$(CC) main_bonus.c $(INC) $(LIB) -o $(EXEC_BONUS)
+	./$(EXEC_BONUS)
+
 leaks: all
 	$(CC) main.c $(INC) $(LIB) -o $(EXEC)
 	valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --track-origins=yes ./$(EXEC)
 
+leaks_bonus: bonus
+	$(CC) main_bonus.c $(INC) $(LIB) -o $(EXEC_BONUS)
+	valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --track-origins=yes ./$(EXEC_BONUS)
+
 $(OBJS_DIR):
-	mkdir -p $@/bonus
+	mkdir -p $@
+
+$(OBJS_DIR)$(BONUS_DIR):
+	mkdir -p $@
