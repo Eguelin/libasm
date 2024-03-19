@@ -9,16 +9,16 @@ section .text
 			syscall
 
 			cmp rax, 0 ; check for error
-			jl errno
+			jl .errno
 
 			ret
 
-		errno:
-			mov rdi, rax ;save error code
-			call __errno_location wrt ..plt ;get errno location
+		.errno:
+			mov rdi, rax ; rdi = error code
+			call __errno_location wrt ..plt ; get errno location
 
-			neg rdi ; negate error code
-			mov [rax], edi ; store error code in errno
+			neg rdi ;rid = -error code
+			mov [rax], edi ; errno = -error code
 
 			mov rax, -1 ; return -1
 			ret

@@ -16,7 +16,7 @@ section .text
 			call malloc wrt ..plt ; malloc(rdi)
 
 			test rax, rax ; check if malloc failed
-			jz return
+			jz .end
 
 			pop rdi ; restore pointer to string
 
@@ -24,6 +24,6 @@ section .text
 			mov rdi, rax ; rdi = malloc(length)
 			call ft_strcpy ; ft_strcpy(rdi, rsi)
 
-		return:
+		.end:
 			ret
 

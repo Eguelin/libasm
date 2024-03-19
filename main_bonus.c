@@ -6,13 +6,14 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2024/03/18 19:07:10 by eguelin          ###   ########.fr       */
+/*   Updated: 2024/03/19 17:57:38 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "libasm_bonus.h"
+#include <string.h>
 
 int main(void)
 {
@@ -26,13 +27,26 @@ int main(void)
 
 	ft_list_push_front(NULL, "elem1");
 
+	ft_list_push_front(&list, "elem3");
 	ft_list_push_front(&list, "elem1");
+	ft_list_push_front(&list, "elem2");
 
 	printf("list->data = %s\n", (char *)list->data);
 	printf("list->next = %p\n", list->next);
 
 	printf("ft_list_size(elem1) = %d\n", ft_list_size(list));
 
+	ft_list_sort(NULL, &ft_strcmp);
+
+	ft_list_sort(&list, &ft_strcmp);
+
+
+	printf("list->data = %s\n", (char *)list->data);
+	printf("list->next->data = %s\n", (char *)list->next->data);
+	printf("list->next->next->data = %s\n", (char *)list->next->next->data);
+
+	free(list->next->next);
+	free(list->next);
 	free(list);
 
 	return (0);

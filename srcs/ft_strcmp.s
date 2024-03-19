@@ -7,18 +7,18 @@ section .text
 			mov ah, [rdi] ; ah = *s1
 
 			cmp ah, [rsi] ; if (*s1 == *s2)
-			jne diff
+			jne .diff
 
 			test ah, ah ; if (*s1 == 0)
-			jz return
+			jz .end
 
 			inc rdi ; s1++
 			inc rsi ; s2++
 			jmp ft_strcmp
 
-		diff:
+		.diff:
 			sub	ah, [rsi] ; ah = *s1 - *s2
 			movsx eax, ah ; eax = (int)ah
 
-		return:
+		.end:
 			ret

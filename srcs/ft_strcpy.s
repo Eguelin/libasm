@@ -7,17 +7,17 @@ section .text
 			push rdx ; save rdx
 			mov rax, rdi ; return = dest
 
-		loop:
+		.loop:
 			mov	dl, [rsi] ; dl = *src
 			mov [rdi], dl ; *dest = *src
 
 			test dl, dl ; if (*src == 0)
-			jz return
+			jz .end
 
 			inc rdi ; dest++
 			inc rsi ; src++
-			jmp loop
+			jmp .loop
 
-		return:
+		.end:
 			pop rdx ; restore rdx
 			ret
