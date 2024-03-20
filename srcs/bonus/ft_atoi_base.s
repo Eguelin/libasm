@@ -67,6 +67,25 @@ section .text
 		.start_atoi:
 			xor r8, r8 ; r8 = 0
 
+		.skip_spaces:
+			mov r9b, byte [rdi] ; r9b = *str
+
+			cmp r9b, 32 ; if (base[i] == ' ')
+			je .inc_str
+
+			cmp r9b, 9 ; if (base[i] < '\t') else if (base[i] == '\t')
+			jl .check_sign
+			je .inc_str
+
+			cmp r9b, 13 ; if (base[i] <= '\r')
+			jle .inc_str
+
+			jmp .check_sign
+
+		.inc_str :
+			inc rdi ; str++
+			jmp .skip_spaces
+
 		.check_sign:
 			cmp byte [rdi], 45 ; if (str[0] == '-')
 			je .negative

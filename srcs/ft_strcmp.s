@@ -18,7 +18,7 @@ section .text
 
 		.diff:
 			sub	ah, [rsi] ; ah = *s1 - *s2
-			movsx eax, ah ; eax = (int)ah
 
 		.end:
+			movsx eax, ah ; eax = (int)ah
 			ret

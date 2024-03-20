@@ -6,7 +6,7 @@
 #    By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/15 18:40:32 by eguelin           #+#    #+#              #
-#    Updated: 2024/03/19 15:54:46 by eguelin          ###   ########.fr        #
+#    Updated: 2024/03/20 14:08:26 by eguelin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -70,7 +70,8 @@ BONUS_DIR	= bonus/
 BONUS_FILES	= ft_atoi_base.s \
 			  ft_list_push_front.s \
 			  ft_list_size.s \
-			  ft_list_sort.s
+			  ft_list_sort.s \
+			  ft_list_remove_if.s
 
 ALL_BONUS_FILES	= $(addprefix $(BONUS_DIR), $(BONUS_FILES))
 
