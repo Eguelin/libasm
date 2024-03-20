@@ -16,7 +16,8 @@ section .text
 			test rcx, rcx ; if(free_fct == NULL)
 			je .end
 
-			mov r8, rdi ; r8 = begin_list
+			push r12
+			mov r12, rdi ; r12 = begin_list
 			mov rdi, [rdi] ; rdi = *begin_list
 
 		.loop:
@@ -36,11 +37,11 @@ section .text
 			pop rdi
 			pop rcx
 
-			cmp rdi, [r8] ; if(rdi != *begin_list)
+			cmp rdi, [r12] ; if(rdi != *begin_list)
 			jne .free
 
 			mov rsi, [rdi + 8] ; rsi = rdi->next
-			mov [r8], rsi ; *begin_list = rsi
+			mov [r12], rsi ; *begin_list = rsi
 
 		.free:
 			mov rsi, [rdi + 8] ; rsi = rdi->next
@@ -67,7 +68,7 @@ section .text
 			jmp .end_loop
 
 		.check_first:
-			cmp rdi, [r8] ; if(rdi == *begin_list)
+			cmp rdi, [r12] ; if(rdi == *begin_list)
 			je .end_loop
 
 			mov [r8 + 8], rdi ; r8->next = rdi
@@ -77,5 +78,6 @@ section .text
 			jne .loop
 
 		.end:
+			pop r12
 			ret
 
