@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2024/03/20 18:42:17 by eguelin          ###   ########.fr       */
+/*   Updated: 2024/03/21 14:39:58 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,8 @@ int main(void)
 	printf("list->next->data = %s\n", (char *)list->next->data);
 	printf("list->next->next->data = %s\n", (char *)list->next->next->data);
 
-	ft_list_remove_if(&list, "elem1", &ft_strcmp, &free);
 	ft_list_remove_if(&list, "elem3", &ft_strcmp, &free);
+	ft_list_remove_if(&list, "elem1", &ft_strcmp, &free);
 	ft_list_remove_if(&list, "elem2", &ft_strcmp, &free);
 
 	printf("list = %p\n", list);

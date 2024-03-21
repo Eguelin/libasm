@@ -16,68 +16,59 @@ section .text
 			test rcx, rcx ; if(free_fct == NULL)
 			je .end
 
+			push rbx
 			push r12
-			mov r12, rdi ; r12 = begin_list
-			mov rdi, [rdi] ; rdi = *begin_list
+			push r13
+			push r14
+			push r15
+
+			mov rbx, rdi ; rbx = begin_list
+			mov r12, [rdi] ; r12 = *begin_list
+			mov r13, rdx ; r13 = cmp
+			mov r14, rcx ; r14 = free_fct
+			xor r15, r15 ; r15 = NULL
 
 		.loop:
 			push rsi
-			push rdx
-			push rcx
-			push rdi
-			push r8
 
-			mov rdi, [rdi] ; rdi = rdi->data
-			call rdx ; cmp(rdi, data_ref)
+			mov rdi, [r12] ; rdi = rdi->data
+			call r13 ; cmp(rdi, data_ref)
 
 			test eax, eax ; if(cmp(rdi, data_ref) != 0)
-			jne .next
+			jne .no_free
 
-			pop r8
-			pop rdi
-			pop rcx
+			mov rdi, r12 ; rdi = r12
+			mov r12, [r12 + 8] ; r12 = r12->next
 
-			cmp rdi, [r12] ; if(rdi != *begin_list)
+			test r15, r15 ; if(r15 != NULL)
 			jne .free
 
-			mov rsi, [rdi + 8] ; rsi = rdi->next
-			mov [r12], rsi ; *begin_list = rsi
+			mov [rbx], r12 ; *begin_list = r12
+			call r14 ; free_fct(rdi)
+
+			jmp .next
 
 		.free:
-			mov rsi, [rdi + 8] ; rsi = rdi->next
+			call r14 ; free_fct(rdi)
 
-			push rcx
-			push rsi
-			push r8
+			mov [r15 + 8], r12 ; r15->next = r12
 
-			call rcx ; free_fct(rdi)
+			jmp .next
+
+		.no_free:
+			mov r15, r12 ; r15 = r12
+			mov r12, [r12 + 8] ; r12 = r12->next
 
 		.next:
-			pop r8
-			pop rdi
-			pop rcx
-			pop rdx
 			pop rsi
 
-			test eax, eax ; if(cmp(rdi, data_ref) == 0)
-			je .check_first
-
-			mov r8, rdi ; r8 = rdi
-			mov rdi, [rdi + 8] ; rdi = rdi->next
-
-			jmp .end_loop
-
-		.check_first:
-			cmp rdi, [r12] ; if(rdi == *begin_list)
-			je .end_loop
-
-			mov [r8 + 8], rdi ; r8->next = rdi
-
-		.end_loop:
-			test rdi, rdi ; if(rdi != NULL)
+			test r12, r12 ; if(r12 != NULL)
 			jne .loop
 
 		.end:
+			pop r15
+			pop r14
+			pop r13
 			pop r12
+			pop rbx
 			ret
-
