@@ -4,56 +4,67 @@ section .text
 	global ft_list_sort
 
 		ft_list_sort:
-			cmp rdi, 0 ; if (begin_list == NULL)
+			test rdi, rdi ; if (begin_list == NULL)
 			je .end
 
 			cmp qword [rdi], 0 ; if (*begin_list == NULL)
 			je .end
 
-			cmp rsi, 0 ; if (cmp == NULL)
+			test rsi, rsi ; if (cmp == NULL)
 			je .end
 
+			push rbx
+			push r12
+			push r13
+			push r14
+			mov rbx, rdi ; rbx = begin_list
+			mov r12, rsi ; r12 = cmp
+
 		.start:
-			push rdi
-			mov rdx, [rdi] ; rdx = *begin_list
+			xor r14, r14 ; r14 = 0
+			mov r13, [rbx] ; r13 = *begin_list
 
 		.sort:
-			cmp qword [rdx + 8], 0 ; if (begin_list->next == NULL)
+			cmp qword [r13 + 8], 0 ; if (r13->next == NULL)
 			je .restore
 
-			mov rcx, [rdx + 8] ; rcx = *begin_list->next
-
-			push rsi
-			mov rax, rsi ; rax = *cmp
-
-			mov rdi, [rdx] ; rdi = *begin_list->data
-			mov rsi, [rcx] ; rsi = *begin_list->next->data
-
-			push rdx
-			push rcx
-			call rax ; cmp(begin_list->data, begin_list->next->data)
-			pop rcx
-			pop rdx
-			pop rsi
+			mov rdi, [r13] ; rdi = r13->data
+			mov rsi, [r13 + 8] ; rsi = r13->next
+			mov rsi, [rsi] ; rsi = rsi->data
+			call r12 ; cmp(r13->data, r13->next->data)
 
 			cmp eax, 0 ; if (rax <= 0)
 			jle .next
 
-			mov rax, [rdx] ; rax = *begin_list->data
-			mov r8, [rcx] ; r8 = *begin_list->next->data
+			mov rdi, r13 ; rdi = r13
+			mov r13, [r13 + 8] ; r13 = r13->next
 
-			mov [rdx], r8 ; *begin_list->data = *begin_list->next->data
-			mov [rcx], rax ; *begin_list->next->data = *begin_list->data
+			test r14, r14 ; if (r14 == 0)
+			je .swap_first
 
-			pop rdi
+			mov [r14 + 8], r13 ;r14->next = r13
+
+			jmp .swap
+
+		.swap_first:
+			mov [rbx], r13 ; begin_list = r13
+
+		.swap:
+			mov rsi, [r13 + 8] ; rsi = r13->next
+			mov [rdi + 8], rsi ; rdi->next = rsi
+			mov [r13 + 8], rdi ; r13->next = rdi
 			jmp .start
 
 		.next:
-			mov rdx, rcx ; begin_list = begin_list->next
+			mov r14, r13 ; r14 = list
+			mov r13, [r13 + 8] ; r13 = list->next
 			jmp .sort
 
 		.restore:
-			pop rdi
+			pop r14
+			pop r13
+			pop r12
+			pop rbx
 
 		.end:
 			ret

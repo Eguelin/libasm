@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2024/03/21 14:39:58 by eguelin          ###   ########.fr       */
+/*   Updated: 2024/03/24 14:57:40 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ int main(void)
 
 	ft_list_push_front(NULL, "elem1");
 
-	ft_list_push_front(&list, "elem3");
 	ft_list_push_front(&list, "elem1");
+	ft_list_push_front(&list, "elem3");
 	ft_list_push_front(&list, "elem2");
 
 	printf("list->data = %s\n", (char *)list->data);
