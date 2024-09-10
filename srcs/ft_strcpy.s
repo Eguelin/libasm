@@ -4,7 +4,6 @@ section .text
 	global ft_strcpy
 
 		ft_strcpy:
-			push rdx ; save rdx
 			mov rax, rdi ; return = dest
 
 		.loop:
@@ -19,5 +18,4 @@ section .text
 			jmp .loop
 
 		.end:
-			pop rdx ; restore rdx
 			ret
