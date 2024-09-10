@@ -22,3 +22,5 @@ section .text
 		.end:
 			movsx eax, ah ; eax = (int)ah
 			ret
+
+section .note.GNU-stack

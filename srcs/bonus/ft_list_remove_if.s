@@ -72,3 +72,5 @@ section .text
 			pop r12
 			pop rbx
 			ret
+
+section .note.GNU-stack
