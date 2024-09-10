@@ -4,31 +4,31 @@ section .text
 	global ft_list_push_front
 	extern malloc
 
-		ft_list_push_front:
-			cmp rdi, 0 ; if (begin_list == NULL)
-			je .end
+	ft_list_push_front:
+		cmp rdi, 0 ; if (begin_list == NULL)
+		je .end
 
-		.create_elem:
-			push rdi
-			push rsi
+	.create_elem:
+		push rdi
+		push rsi
 
-			mov rdi, 16	;size of t_list
-			call malloc wrt ..plt ;malloc(sizeof(t_list))
+		mov rdi, 16	;size of t_list
+		call malloc wrt ..plt ;malloc(sizeof(t_list))
 
-			pop rsi
-			pop rdi
+		pop rsi
+		pop rdi
 
-			test rax, rax ;check if malloc failed
-			jz .add_elem
+		test rax, rax ;check if malloc failed
+		jz .add_elem
 
-			mov [rax], rsi ;new_elem->data = data
-			mov rsi, [rdi]
-			mov [rax + 8], rsi ;new_elem->next = *begin_list
+		mov [rax], rsi ;new_elem->data = data
+		mov rsi, [rdi]
+		mov [rax + 8], rsi ;new_elem->next = *begin_list
 
-		.add_elem:
-			mov	[rdi], rax ;*begin_list = new_elem
+	.add_elem:
+		mov	[rdi], rax ;*begin_list = new_elem
 
-		.end:
-			ret
+	.end:
+		ret
 
 section .note.GNU-stack
