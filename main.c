@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/11 16:13:02 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/11 18:02:02 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ void	free_tab_str(char **tab, int size);
 void	test_strcmp(char **tab);
 void	test_write(char **tab);
 int		fdcmp(char *file1, char *file2);
+void	test_read(char **tab);
+int		create_file(char *file, char *str);
 
 #define TEST(expr) \
 	if (sigsetjmp(env, 1) == 0 && (expr)) \
@@ -74,6 +76,7 @@ int main()
 	test_strcpy(tab);
 	test_strcmp(tab);
 	test_write(tab);
+	test_read(tab);
 	return (0);
 }
 
@@ -320,5 +323,77 @@ int	fdcmp(char *file1, char *file2)
 	close(fd2);
 	if (ret1 != ret2)
 		return (1);
+	return (0);
+}
+
+void	test_read(char **tab)
+{
+	int		fd;
+	int		fd2;
+	int		i = 0;
+	char	*str[2];
+
+	// Classic tests
+	printf(PURPLE"\t--- ft_read ---\n"RESET);
+	while (tab[i])
+	{
+		if (create_file("test.txt", tab[i]))
+			exit_error("failed to create test.txt", NULL, 0, -1);
+		str[0] = calloc(1, strlen(tab[i]) + 1);
+		if (!str[0])
+			exit_error("failed to allocate str", NULL, 0, -1);
+		str[1] = calloc(1, strlen(tab[i]) + 1);
+		if (!str[1])
+			exit_error("failed to allocate str2", str, 1, -1);
+		fd = open("test.txt", O_RDONLY);
+		if (fd < 0)
+			exit_error("failed to open test.txt", str, 2, -1);
+		fd2 = open("test.txt", O_RDONLY);
+		if (fd2 < 0)
+			exit_error("failed to open test.txt", str, 2, fd);
+		TEST(read(fd, str[0], strlen(tab[i])) == ft_read(fd2, str[1], strlen(tab[i])) && !strcmp(str[0], str[1]));
+		printf(BLUE"ft_read(fd, buf, %lu)\n"RESET, strlen(tab[i]));
+		free_tab_str(str, 2);
+		close(fd);
+		close(fd2);
+		i++;
+	}
+
+	// errno test
+	TEST(ft_read(-1, "test", 4) && errno == EBADF);
+	printf(BLUE"ft_read(-1, \"test\", 4)\n"RESET);
+
+	// Ferry big string test
+	str[0] = calloc(1, UINT_MAX);
+	if (!str)
+		exit_error("failed to allocate str[UINT_MAX]", NULL, 0, -1);
+	str[1] = calloc(1, UINT_MAX);
+	if (!str[1])
+		exit_error("failed to allocate str2[UINT_MAX]", str, 1, -1);
+	str[0] = memset(str[0], 'c', UINT_MAX - 1);
+	if (create_file("test.txt", str[0]))
+		exit_error("failed to create test.txt", str, 2, -1);
+	bzero(str[0], UINT_MAX);
+	fd = open("test.txt", O_RDONLY);
+	if (fd < 0)
+		exit_error("failed to open test.txt", str, 2, -1);
+	fd2 = open("test.txt", O_RDONLY);
+	if (fd2 < 0)
+		exit_error("failed to open test.txt", str, 2, fd);
+	TEST(read(fd, str[0], UINT_MAX) == ft_read(fd2, str[1], UINT_MAX) && !strcmp(str[0], str[1]));
+	printf(BLUE"ft_read(fd, buf[UINT_MAX], UINT_MAX)\n"RESET);
+	free_tab_str(str, 2);
+	close(fd);
+	close(fd2);
+	remove("test.txt");
+}
+
+int	create_file(char *file, char *str)
+{
+	int fd = open(file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (fd < 0)
+		return (1);
+	write(fd, str, strlen(str));
+	close(fd);
 	return (0);
 }
