@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/11 18:02:02 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/11 18:20:36 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void	test_write(char **tab);
 int		fdcmp(char *file1, char *file2);
 void	test_read(char **tab);
 int		create_file(char *file, char *str);
+void	test_strdup(char **tab);
 
 #define TEST(expr) \
 	if (sigsetjmp(env, 1) == 0 && (expr)) \
@@ -77,6 +78,7 @@ int main()
 	test_strcmp(tab);
 	test_write(tab);
 	test_read(tab);
+	test_strdup(tab);
 	return (0);
 }
 
@@ -396,4 +398,33 @@ int	create_file(char *file, char *str)
 	write(fd, str, strlen(str));
 	close(fd);
 	return (0);
+}
+
+void	test_strdup(char **tab)
+{
+	int		i = 0;
+	char	*str[2];
+
+	// Classic tests
+	printf(PURPLE"\t--- ft_strdup ---\n"RESET);
+	while (tab[i])
+	{
+		TEST((str[0] = ft_strdup(tab[i])) && !strcmp(str[0], tab[i]));
+		printf(BLUE"ft_strdup(\"%s\")\n"RESET, tab[i]);
+		free(str[0]);
+		i++;
+	}
+
+	// NULL tests
+	TEST_SEG(ft_strdup(NULL));
+	printf(BLUE"ft_strdup(NULL)\n"RESET);
+
+	// Ferry big string test
+	str[0] = calloc(1, UINT_MAX);
+	if (!str[0])
+		exit_error("failed to allocate str[UINT_MAX]", NULL, 0, -1);
+	str[0] = memset(str[0], 'c', UINT_MAX - 1);
+	TEST((str[1] = ft_strdup(str[0])) && !strcmp(str[0], str[1]));
+	printf(BLUE"ft_strdup(str[UINT_MAX])\n"RESET);
+	free_tab_str(str, 2);
 }
