@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/10 19:24:12 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/11 16:13:02 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <fcntl.h>
+# include <errno.h>
 #include "libasm.h"
 
 #define RED "\033[0;31m"
@@ -32,9 +34,11 @@ sigjmp_buf env;
 void	segfault_handler(int sig);
 void	test_strlen(char **tab);
 void	test_strcpy(char **tab);
-void	exit_error(char *str, char **tab, int size);
+void	exit_error(char *str, char **tab, int size, int fd);
 void	free_tab_str(char **tab, int size);
 void	test_strcmp(char **tab);
+void	test_write(char **tab);
+int		fdcmp(char *file1, char *file2);
 
 #define TEST(expr) \
 	if (sigsetjmp(env, 1) == 0 && (expr)) \
@@ -69,6 +73,7 @@ int main()
 	test_strlen(tab);
 	test_strcpy(tab);
 	test_strcmp(tab);
+	test_write(tab);
 	return (0);
 }
 
@@ -122,7 +127,7 @@ void test_strcpy(char **tab)
 		{
 			str[j] = calloc(sizeof(char), strlen(tab[i]) + 1);
 			if (!str[j])
-				exit_error("failed to allocate str", str, j);
+				exit_error("failed to allocate str", str, j, -1);
 		}
 		TEST(!strcmp(strcpy(str[0], tab[i]), ft_strcpy(str[1], tab[i])));
 		printf(BLUE"ft_strcpy(dest, \"%s\")\n"RESET, tab[i]);
@@ -135,7 +140,7 @@ void test_strcpy(char **tab)
 	{
 		str[j] = strdup("Hello, World!");
 		if (!str[j])
-			exit_error("failed to allocate str", str, j);
+			exit_error("failed to allocate str", str, j, -1);
 	}
 	TEST(!strcmp(strcpy(str[0], str[0] + 6), ft_strcpy(str[1], str[1] + 6)));
 	printf(BLUE"ft_strcpy(dest, str + 6) (overlapping)\n"RESET);
@@ -152,7 +157,7 @@ void test_strcpy(char **tab)
 	{
 		str[j] = calloc(sizeof(char), UINT_MAX);
 		if (!str[j])
-			exit_error("failed to allocate str", str, j);
+			exit_error("failed to allocate str", str, j, -1);
 	}
 	str[0] = memset(str[0], 'c', UINT_MAX - 1);
 	TEST(!strcmp(strcpy(str[1], str[0]), ft_strcpy(str[2], str[0])));
@@ -160,10 +165,16 @@ void test_strcpy(char **tab)
 	free_tab_str(str, 3);
 }
 
-void	exit_error(char *str, char **tab, int size)
+void	exit_error(char *str, char **tab, int tab_size, int fd)
 {
-	if (tab && size)
-		free_tab_str(tab, size);
+	if (tab && tab_size)
+		free_tab_str(tab, tab_size);
+	if (fd >= 0)
+	{
+		close(fd);
+		remove("test.txt");
+		remove("test2.txt");
+	}
 	printf(RED"%s\n"RESET, str);
 	exit(1);
 }
@@ -210,7 +221,7 @@ void test_strcmp(char **tab)
 	// Ferry big string test
 	str = calloc(1, UINT_MAX);
 	if (!str)
-		exit_error("failed to allocate str", NULL, 0);
+		exit_error("failed to allocate str", NULL, 0, -1);
 	str = memset(str, 'c', UINT_MAX - 1);
 	TEST(!ft_strcmp(str, str));
 	printf(BLUE"ft_strcmp(str[UINT_MAX], str[UINT_MAX])\n"RESET);
@@ -221,3 +232,93 @@ void test_strcmp(char **tab)
 	free(str);
 }
 
+void	test_write(char **tab)
+{
+	int		fd;
+	int		fd2;
+	int		i = 0;
+	char	*str;
+
+	// Classic tests
+	printf(PURPLE"\t--- ft_write ---\n"RESET);
+	while (tab[i])
+	{
+		errno = -1;
+		fd = open("test.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+		if (fd < 0)
+			exit_error("failed to open test.txt", NULL, 0, -1);
+		fd2 = open("test2.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+		if (fd2 < 0)
+			exit_error("failed to open test2.txt", NULL, 0, fd);
+		TEST(write(fd, tab[i], strlen(tab[i])) == ft_write(fd2, tab[i], strlen(tab[i])) && !fdcmp("test.txt", "test2.txt"));
+		printf(BLUE"ft_write(fd, \"%s\", %u)\n"RESET, tab[i], strlen(tab[i]));
+		i++;
+		close(fd);
+		close(fd2);
+	}
+
+	// errno test
+	TEST(write(-1, "test", 4) == ft_write(-1, "test", 4) && errno == EBADF);
+	printf(BLUE"ft_write(-1, \"test\", 4)\n"RESET);
+
+	// NULL tests
+	TEST(ft_write(1, NULL, 4) == -1 && errno == EFAULT);
+	printf(BLUE"ft_write(1, NULL, 4)\n"RESET);
+
+	// Ferry big string test
+	str = calloc(1, UINT_MAX);
+	if (!str)
+		exit_error("failed to allocate str[UINT_MAX]", NULL, 0, -1);
+	str = memset(str, 'c', UINT_MAX - 1);
+	fd = open("test.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (fd < 0)
+		exit_error("failed to open test.txt", &str, 1, -1);
+	fd2 = open("test2.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (fd2 < 0)
+		exit_error("failed to open test2.txt", &str, 1, fd);
+	TEST(write(fd, str, UINT_MAX) == ft_write(fd2, str, UINT_MAX) && !fdcmp("test.txt", "test2.txt"));
+	printf(BLUE"ft_write(fd, str[UINT_MAX], UINT_MAX)\n"RESET);
+	close(fd);
+	close(fd2);
+	free(str);
+
+	remove("test.txt");
+	remove("test2.txt");
+}
+
+int	fdcmp(char *file1, char *file2)
+{
+	int		fd1;
+	int		fd2;
+	int		ret1 = 1;
+	int		ret2 = 1;
+	char	buf1[4096];
+	char	buf2[4096];
+
+	fd1 = open(file1, O_RDONLY);
+	fd2 = open(file2, O_RDONLY);
+	if (fd1 < 0 || fd2 < 0)
+	{
+		if (fd1 >= 0)
+			close(fd1);
+		if (fd2 >= 0)
+			close(fd2);
+		return (1);
+	}
+	while (ret1 > 0 && ret2 > 0)
+	{
+		ret1 = read(fd1, buf1, 4096);
+		ret2 = read(fd2, buf2, 4096);
+		if (ret1 != ret2 || memcmp(buf1, buf2, ret1))
+		{
+			close(fd1);
+			close(fd2);
+			return (1);
+		}
+	}
+	close(fd1);
+	close(fd2);
+	if (ret1 != ret2)
+		return (1);
+	return (0);
+}
