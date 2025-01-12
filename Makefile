@@ -6,7 +6,7 @@
 #    By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/15 18:40:32 by eguelin           #+#    #+#              #
-#    Updated: 2024/03/20 14:08:26 by eguelin          ###   ########.fr        #
+#    Updated: 2025/01/12 17:44:00 by eguelin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,13 +18,13 @@
 # **************************************************************************** #
 
 NAME		= libasm.a
-EXEC		= run
-EXEC_BONUS	= run_bonus
+TEST		= test
+TEST_BONUS	= test_bonus
 OBJS_DIR	= .objs/
 SRCS_DIR	= srcs/
 INCS_DIR	= includes/
 CC			= cc
-CFLAGS		= -Wall -Wextra -Werror
+CFLAGS		= -Wall -Wextra -Werror -fsanitize=address -g
 INC			= -I $(INCS_DIR)
 LIB			= -L. -lasm
 AS			= nasm
@@ -50,10 +50,10 @@ DEFAULT	= \033[0m
 #                                    Message                                   #
 # **************************************************************************** #
 
-COMP_MSG		= "$(GREEN)Compilation $(NAME) $(DEFAULT)done on $(YELLOW)$(shell date +'%Y-%m-%d %H:%M:%S')$(DEFAULT)"
-BONUS_COMP_MSG	= "$(BLUE)Compilation $(NAME) bonus $(DEFAULT)done on $(YELLOW)$(shell date +'%Y-%m-%d %H:%M:%S')$(DEFAULT)"
-CLEAN_MSG		= "$(RED)Cleaning $(NAME) $(DEFAULT)done on $(YELLOW)$(shell date +'%Y-%m-%d %H:%M:%S')$(DEFAULT)"
-FULL_CLEAN_MSG	= "$(PURPLE)Full cleaning $(NAME) $(DEFAULT)done on $(YELLOW)$(shell date +'%Y-%m-%d %H:%M:%S')$(DEFAULT)"
+COMP_MSG		= "$(GREEN)Compilation $(NAME) $(DEFAULT)done on $(YELLOW)$(shell date +'%Y-%m-%d %H:%M:%S')$(DEFAULT)\n"
+BONUS_COMP_MSG	= "$(BLUE)Compilation $(NAME) bonus $(DEFAULT)done on $(YELLOW)$(shell date +'%Y-%m-%d %H:%M:%S')$(DEFAULT)\n"
+CLEAN_MSG		= "$(RED)Cleaning $(NAME) $(DEFAULT)done on $(YELLOW)$(shell date +'%Y-%m-%d %H:%M:%S')$(DEFAULT)\n"
+FULL_CLEAN_MSG	= "$(PURPLE)Full cleaning $(NAME) $(DEFAULT)done on $(YELLOW)$(shell date +'%Y-%m-%d %H:%M:%S')$(DEFAULT)\n"
 
 # **************************************************************************** #
 #                                    Sources                                   #
@@ -87,42 +87,36 @@ all: $(NAME)
 
 $(NAME): $(OBJS_FILES)
 	$(ARC) $(NAME) $(OBJS_FILES)
-	echo $(COMP_MSG)
+	printf $(COMP_MSG)
 
 bonus: all $(OBJS_DIR)$(BONUS_DIR) $(BONUS_OBJS_FILES)
 	$(ARC) $(NAME) $(BONUS_OBJS_FILES)
-	echo $(BONUS_COMP_MSG)
+	printf $(BONUS_COMP_MSG)
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.s | $(OBJS_DIR)
 	$(AS) $(AFLAGS) $< -o $@
 
 clean:
 	$(RM) $(OBJS_DIR)
-	echo $(CLEAN_MSG)
+	printf $(CLEAN_MSG)
 
 fclean: clean
 	$(RM) $(NAME)
-	$(RM) $(EXEC)
-	$(RM) $(EXEC_BONUS)
-	echo $(FULL_CLEAN_MSG)
+	$(RM) $(TEST)
+	$(RM) $(TEST_BONUS)
+	printf $(FULL_CLEAN_MSG)
 
 re: fclean all
 
-run: all
-	$(CC) main.c $(INC) $(LIB) -o $(EXEC)
-	./$(EXEC)
+$(TEST): all
+	$(CC) $(CFLAGS) $@.c $(INC) $(LIB) -o $@
+	./$@
 
-run_bonus: bonus
-	$(CC) main_bonus.c $(INC) $(LIB) -o $(EXEC_BONUS)
-	./$(EXEC_BONUS)
+$(TEST_BONUS): bonus
+	$(CC) $(CFLAGS) $@.c $(INC) $(LIB) -o $@
+	./$@
 
-leaks: all
-	$(CC) main.c $(INC) $(LIB) -o $(EXEC)
-	valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --track-origins=yes ./$(EXEC)
-
-leaks_bonus: bonus
-	$(CC) main_bonus.c $(INC) $(LIB) -o $(EXEC_BONUS)
-	valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --track-origins=yes ./$(EXEC_BONUS)
+test_all: $(TEST) $(TEST_BONUS)
 
 $(OBJS_DIR):
 	mkdir -p $@

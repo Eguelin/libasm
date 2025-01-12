@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   test.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/11 18:20:36 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/12 17:46:32 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <string.h>
 #include <limits.h>
 #include <fcntl.h>
-# include <errno.h>
+#include <errno.h>
 #include "libasm.h"
 
 #define RED "\033[0;31m"
@@ -26,7 +26,6 @@
 #define YELLOW "\033[0;33m"
 #define BLUE "\033[0;34m"
 #define PURPLE "\033[0;35m"
-#define CYAN "\033[0;36m"
 #define RESET "\033[0m"
 
 sigjmp_buf env;
@@ -84,6 +83,7 @@ int main()
 
 void	segfault_handler(int sig)
 {
+	(void)sig;
 	siglongjmp(env, 1);
 }
 
@@ -106,7 +106,7 @@ void	test_strlen(char **tab)
 	printf(BLUE"ft_strlen(NULL)\n"RESET);
 
 	// Ferry big string test
-	str = calloc(sizeof(char), UINT_MAX);
+	str = calloc(UINT_MAX, sizeof(char));
 	if (!str)
 	{
 		printf(RED"failed to allocate str[UINT_MAX]\n"RESET);
@@ -130,7 +130,7 @@ void test_strcpy(char **tab)
 	{
 		for (int j = 0; j < 2; j++)
 		{
-			str[j] = calloc(sizeof(char), strlen(tab[i]) + 1);
+			str[j] = calloc(strlen(tab[i]) + 1, sizeof(char));
 			if (!str[j])
 				exit_error("failed to allocate str", str, j, -1);
 		}
@@ -139,17 +139,6 @@ void test_strcpy(char **tab)
 		free_tab_str(str, 2);
 		i++;
 	}
-
-	// Overlapping test
-	for (int j = 0; j < 2; j++)
-	{
-		str[j] = strdup("Hello, World!");
-		if (!str[j])
-			exit_error("failed to allocate str", str, j, -1);
-	}
-	TEST(!strcmp(strcpy(str[0], str[0] + 6), ft_strcpy(str[1], str[1] + 6)));
-	printf(BLUE"ft_strcpy(dest, str + 6) (overlapping)\n"RESET);
-	free_tab_str(str, 2);
 
 	// NULL tests
 	TEST_SEG(ft_strcpy(destNULL, NULL));
@@ -160,7 +149,7 @@ void test_strcpy(char **tab)
 	// Ferry big string test
 	for (int j = 0; j < 3; j++)
 	{
-		str[j] = calloc(sizeof(char), UINT_MAX);
+		str[j] = calloc(UINT_MAX, sizeof(char));
 		if (!str[j])
 			exit_error("failed to allocate str", str, j, -1);
 	}
@@ -210,7 +199,9 @@ void test_strcmp(char **tab)
 		j = 0;
 		while (tab[j])
 		{
-			TEST(ft_strcmp(tab[i], tab[j]) == strcmp(tab[i], tab[j]));
+			TEST((ft_strcmp(tab[i], tab[j]) == 0 && strcmp(tab[i], tab[j]) == 0) ||
+			(ft_strcmp(tab[i], tab[j]) < 0 && strcmp(tab[i], tab[j]) < 0) ||
+			(ft_strcmp(tab[i], tab[j]) > 0 && strcmp(tab[i], tab[j]) > 0));
 			printf(BLUE"ft_strcmp(\"%s\", \"%s\")\n"RESET, tab[i], tab[j]);
 			j++;
 		}
@@ -224,7 +215,7 @@ void test_strcmp(char **tab)
 	printf(BLUE"ft_strcmp(NULL, src)\n"RESET);
 
 	// Ferry big string test
-	str = calloc(1, UINT_MAX);
+	str = calloc(UINT_MAX, sizeof(char));
 	if (!str)
 		exit_error("failed to allocate str", NULL, 0, -1);
 	str = memset(str, 'c', UINT_MAX - 1);
@@ -256,7 +247,7 @@ void	test_write(char **tab)
 		if (fd2 < 0)
 			exit_error("failed to open test2.txt", NULL, 0, fd);
 		TEST(write(fd, tab[i], strlen(tab[i])) == ft_write(fd2, tab[i], strlen(tab[i])) && !fdcmp("test.txt", "test2.txt"));
-		printf(BLUE"ft_write(fd, \"%s\", %u)\n"RESET, tab[i], strlen(tab[i]));
+		printf(BLUE"ft_write(fd, \"%s\", %lu)\n"RESET, tab[i], strlen(tab[i]));
 		i++;
 		close(fd);
 		close(fd2);
@@ -271,7 +262,7 @@ void	test_write(char **tab)
 	printf(BLUE"ft_write(1, NULL, 4)\n"RESET);
 
 	// Ferry big string test
-	str = calloc(1, UINT_MAX);
+	str = calloc(UINT_MAX, sizeof(char));
 	if (!str)
 		exit_error("failed to allocate str[UINT_MAX]", NULL, 0, -1);
 	str = memset(str, 'c', UINT_MAX - 1);
@@ -341,10 +332,10 @@ void	test_read(char **tab)
 	{
 		if (create_file("test.txt", tab[i]))
 			exit_error("failed to create test.txt", NULL, 0, -1);
-		str[0] = calloc(1, strlen(tab[i]) + 1);
+		str[0] = calloc(strlen(tab[i]) + 1, sizeof(char));
 		if (!str[0])
 			exit_error("failed to allocate str", NULL, 0, -1);
-		str[1] = calloc(1, strlen(tab[i]) + 1);
+		str[1] = calloc(strlen(tab[i]) + 1, sizeof(char));
 		if (!str[1])
 			exit_error("failed to allocate str2", str, 1, -1);
 		fd = open("test.txt", O_RDONLY);
@@ -366,10 +357,10 @@ void	test_read(char **tab)
 	printf(BLUE"ft_read(-1, \"test\", 4)\n"RESET);
 
 	// Ferry big string test
-	str[0] = calloc(1, UINT_MAX);
-	if (!str)
+	str[0] = calloc(UINT_MAX, sizeof(char));
+	if (!str[0])
 		exit_error("failed to allocate str[UINT_MAX]", NULL, 0, -1);
-	str[1] = calloc(1, UINT_MAX);
+	str[1] = calloc(UINT_MAX, sizeof(char));
 	if (!str[1])
 		exit_error("failed to allocate str2[UINT_MAX]", str, 1, -1);
 	str[0] = memset(str[0], 'c', UINT_MAX - 1);
@@ -420,7 +411,7 @@ void	test_strdup(char **tab)
 	printf(BLUE"ft_strdup(NULL)\n"RESET);
 
 	// Ferry big string test
-	str[0] = calloc(1, UINT_MAX);
+	str[0] = calloc(UINT_MAX, sizeof(char));
 	if (!str[0])
 		exit_error("failed to allocate str[UINT_MAX]", NULL, 0, -1);
 	str[0] = memset(str[0], 'c', UINT_MAX - 1);
