@@ -5,6 +5,12 @@ section .text
 	extern	ft_strlen
 
 	ft_atoi_base:
+		xor eax, eax ; set return value to 0
+		test rdi, rdi ; if (str == NULL)
+		jz .end
+		test rsi, rsi ; if (base == NULL)
+		jz .end
+
 		push rdi
 
 		mov rdi, rsi ; rdi = base
