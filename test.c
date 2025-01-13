@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/12 17:46:32 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/13 15:29:07 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ void test_strcpy(char **tab)
 			if (!str[j])
 				exit_error("failed to allocate str", str, j, -1);
 		}
-		TEST(!strcmp(strcpy(str[0], tab[i]), ft_strcpy(str[1], tab[i])));
+		TEST(!strcmp(strcpy(str[0], tab[i]), ft_strcpy(str[1], tab[i])) && str[0] == ft_strcpy(str[0], tab[i]));
 		printf(BLUE"ft_strcpy(dest, \"%s\")\n"RESET, tab[i]);
 		free_tab_str(str, 2);
 		i++;
@@ -143,7 +143,7 @@ void test_strcpy(char **tab)
 	// NULL tests
 	TEST_SEG(ft_strcpy(destNULL, NULL));
 	printf(BLUE"ft_strcpy(dest, NULL)\n"RESET);
-	TEST_SEG(ft_strcpy(NULL, destNULL));
+	TEST_SEG(ft_strcpy(NULL, "test"));
 	printf(BLUE"ft_strcpy(NULL, src)\n"RESET);
 
 	// Ferry big string test
@@ -239,14 +239,14 @@ void	test_write(char **tab)
 	printf(PURPLE"\t--- ft_write ---\n"RESET);
 	while (tab[i])
 	{
-		errno = -1;
 		fd = open("test.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (fd < 0)
 			exit_error("failed to open test.txt", NULL, 0, -1);
 		fd2 = open("test2.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (fd2 < 0)
 			exit_error("failed to open test2.txt", NULL, 0, fd);
-		TEST(write(fd, tab[i], strlen(tab[i])) == ft_write(fd2, tab[i], strlen(tab[i])) && !fdcmp("test.txt", "test2.txt"));
+		errno = -1;
+		TEST(write(fd, tab[i], strlen(tab[i])) == ft_write(fd2, tab[i], strlen(tab[i])) && !fdcmp("test.txt", "test2.txt") && errno == -1);
 		printf(BLUE"ft_write(fd, \"%s\", %lu)\n"RESET, tab[i], strlen(tab[i]));
 		i++;
 		close(fd);
@@ -344,7 +344,8 @@ void	test_read(char **tab)
 		fd2 = open("test.txt", O_RDONLY);
 		if (fd2 < 0)
 			exit_error("failed to open test.txt", str, 2, fd);
-		TEST(read(fd, str[0], strlen(tab[i])) == ft_read(fd2, str[1], strlen(tab[i])) && !strcmp(str[0], str[1]));
+		errno = -1;
+		TEST(read(fd, str[0], strlen(tab[i])) == ft_read(fd2, str[1], strlen(tab[i])) && !strcmp(str[0], str[1]) && errno == -1);
 		printf(BLUE"ft_read(fd, buf, %lu)\n"RESET, strlen(tab[i]));
 		free_tab_str(str, 2);
 		close(fd);
@@ -402,7 +403,8 @@ void	test_strdup(char **tab)
 	{
 		TEST((str[0] = ft_strdup(tab[i])) && !strcmp(str[0], tab[i]));
 		printf(BLUE"ft_strdup(\"%s\")\n"RESET, tab[i]);
-		free(str[0]);
+		if (str[0] != tab[i])
+			free(str[0]);
 		i++;
 	}
 
