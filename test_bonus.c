@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/12 17:47:41 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/13 10:33:28 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,13 @@
 sigjmp_buf env;
 
 void	segfault_handler(int sig);
+void	test_atoi_base(void);
+
+#define TEST(expr) \
+	if (sigsetjmp(env, 1) == 0 && (expr)) \
+		write(STDOUT_FILENO, GREEN"[OK] ", 13); \
+	else \
+		write(STDOUT_FILENO, RED"[KO] ", 13);
 
 int main()
 {
@@ -37,6 +44,7 @@ int main()
 	sa.sa_handler = segfault_handler;
 	sa.sa_flags = SA_RESTART;
 	sigaction(SIGSEGV, &sa, NULL);
+	test_atoi_base();
 	return (0);
 }
 
@@ -46,6 +54,51 @@ void	segfault_handler(int sig)
 	siglongjmp(env, 1);
 }
 
+void	test_atoi_base(void)
+{
+	char	*tab[][3] = {{"-1", "01", "-1"},
+						{"1", "01", "1"},
+						{"-1", "0123456789", "-1"},
+						{ "1", "0123456789", "1"},
+						{"-1", "0123456789abcdef", "-1"},
+						{"1", "0123456789abcdef", "1"},
+						{"-1", "0123456789ABCDEF", "-1"},
+						{"1", "0123456789ABCDEF", "1"},
+						{"10111f", "01", "23"},
+						{"-10111f", "01", "-23"},
+						{"10111f", "0123456789", "10111"},
+						{"-10111f", "0123456789", "-10111"},
+						{"10111f", "0123456789abcdef", "1052959"},
+						{"-10111f", "0123456789abcdef", "-1052959"},
+						{"10111f", "0123456789ABCDEF", "65809"},
+						{"-10111f", "0123456789ABCDEF", "-65809"},
+						{"-10000000000000000000000000000000", "01", "-2147483648"},
+						{"1111111111111111111111111111111", "01", "2147483647"},
+						{"-2147483648", "0123456789", "-2147483648"},
+						{"2147483647", "0123456789", "2147483647"},
+						{"-7fffffff", "0123456789abcdef", "-2147483647"},
+						{"7fffffff", "0123456789abcdef", "2147483647"},
+						{"-7FFFFFFF", "0123456789ABCDEF", "-2147483647"},
+						{"7FFFFFFF", "0123456789ABCDEF", "2147483647"},
+						{"\t   7", "0123456789", "7"},
+						{"\t   -7", "0123456789", "-7"},
+						{"", "10", "0"},
+						{"+++---+-9", "369", "2"},
+						{"444" , "4", "0"},
+						{"55", "012345+", "0"},
+						{"55", "012345\t", "0"},
+						{NULL, "01", "0"},
+						{"1", NULL, "0"},
+						{NULL, NULL, "0"}};
+
+	printf(PURPLE"\t--- ft_atoi_base ---\n"RESET);
+	for (int i = 0; i < 33; i++)
+	{
+		TEST(ft_atoi_base(tab[i][0], tab[i][1]) == atoi(tab[i][2]));
+		printf(BLUE"ft_atoi_base(\"%s\", \"%s\")\n"RESET, tab[i][0], tab[i][1]);
+	}
+	return ;
+}
 
 	// printf("ft_atoi_base(\"-100\", \"01\") = %d\n", ft_atoi_base("-100", "01"));
 
