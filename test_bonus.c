@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/13 10:33:28 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/14 09:19:24 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,48 @@ sigjmp_buf env;
 
 void	segfault_handler(int sig);
 void	test_atoi_base(void);
+void	test_list_push_front(void);
 
-#define TEST(expr) \
-	if (sigsetjmp(env, 1) == 0 && (expr)) \
-		write(STDOUT_FILENO, GREEN"[OK] ", 13); \
+#define ASSERT_CONDITION(condition) \
+	if (sigsetjmp(env, 1) == 0) \
+	{ \
+		if (condition) \
+			write(STDOUT_FILENO, GREEN"[OK] ", 13); \
+		else \
+			write(STDOUT_FILENO, RED"[KO] ", 13); \
+	} \
 	else \
-		write(STDOUT_FILENO, RED"[KO] ", 13);
+		write(STDOUT_FILENO, RED"[SEGV] ", 15);
+
+#define ASSERT_EXPR_CONDITION(expr, condition) \
+	if (sigsetjmp(env, 1) == 0) \
+	{ \
+		(expr); \
+		if (condition) \
+			write(STDOUT_FILENO, GREEN"[OK] ", 13); \
+		else \
+			write(STDOUT_FILENO, RED"[KO] ", 13); \
+	} \
+	else \
+		write(STDOUT_FILENO, RED"[SEGV] ", 15);
+
+#define ASSERT_NO_SEGFAULT(expr) \
+	if (sigsetjmp(env, 1) == 0) \
+	{ \
+		(expr); \
+		write(STDOUT_FILENO, GREEN"[OK] ", 13); \
+	} \
+	else \
+		write(STDOUT_FILENO, RED"[SEGV] ", 15);
+
+#define EXPECT_SEGFAULT(expr) \
+	if (sigsetjmp(env, 1) == 0) \
+	{ \
+		(expr); \
+		write(STDOUT_FILENO, YELLOW"[WARN] ", 15); \
+	} \
+	else \
+		write(STDOUT_FILENO, GREEN"[OK] ", 13);
 
 int main()
 {
@@ -45,6 +81,7 @@ int main()
 	sa.sa_flags = SA_RESTART;
 	sigaction(SIGSEGV, &sa, NULL);
 	test_atoi_base();
+	test_list_push_front();
 	return (0);
 }
 
@@ -94,9 +131,38 @@ void	test_atoi_base(void)
 	printf(PURPLE"\t--- ft_atoi_base ---\n"RESET);
 	for (int i = 0; i < 33; i++)
 	{
-		TEST(ft_atoi_base(tab[i][0], tab[i][1]) == atoi(tab[i][2]));
+		ASSERT_CONDITION(ft_atoi_base(tab[i][0], tab[i][1]) == atoi(tab[i][2]));
 		printf(BLUE"ft_atoi_base(\"%s\", \"%s\")\n"RESET, tab[i][0], tab[i][1]);
 	}
+	return ;
+}
+
+void	test_list_push_front(void)
+{
+	t_list	*list = NULL;
+	char	*tab[] = {"elem1", "elem2", "elem3"};
+
+	// Classic tests
+	printf(PURPLE"\t--- ft_list_push_front ---\n"RESET);
+	for (int i = 0; i < 3; i++)
+	{
+		ASSERT_EXPR_CONDITION(ft_list_push_front(&list, tab[i]),
+			list->data == tab[i] && (list->next == NULL || list->next->data == tab[i - 1]));
+		printf(BLUE"ft_list_push_front(&list, \"%s\")\n"RESET, tab[i]);
+	}
+	while (list)
+	{
+		t_list	*tmp = list;
+
+		list = list->next;
+		free(tmp);
+	}
+
+	// NULL tests
+	ASSERT_NO_SEGFAULT(ft_list_push_front(NULL, "elem1"));
+	printf(BLUE"ft_list_push_front(NULL, \"elem1\")\n"RESET);
+
+
 	return ;
 }
 
