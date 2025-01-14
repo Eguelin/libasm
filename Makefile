@@ -6,7 +6,7 @@
 #    By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/15 18:40:32 by eguelin           #+#    #+#              #
-#    Updated: 2025/01/12 17:44:00 by eguelin          ###   ########.fr        #
+#    Updated: 2025/01/14 15:59:02 by eguelin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,15 +18,9 @@
 # **************************************************************************** #
 
 NAME		= libasm.a
-TEST		= test
-TEST_BONUS	= test_bonus
 OBJS_DIR	= .objs/
 SRCS_DIR	= srcs/
 INCS_DIR	= includes/
-CC			= cc
-CFLAGS		= -Wall -Wextra -Werror -fsanitize=address -g
-INC			= -I $(INCS_DIR)
-LIB			= -L. -lasm
 AS			= nasm
 AFLAGS		= -f elf64
 ARC			= ar -rcs
@@ -107,16 +101,6 @@ fclean: clean
 	printf $(FULL_CLEAN_MSG)
 
 re: fclean all
-
-$(TEST): all
-	$(CC) $(CFLAGS) $@.c $(INC) $(LIB) -o $@
-	./$@
-
-$(TEST_BONUS): bonus
-	$(CC) $(CFLAGS) $@.c $(INC) $(LIB) -o $@
-	./$@
-
-test_all: $(TEST) $(TEST_BONUS)
 
 $(OBJS_DIR):
 	mkdir -p $@
