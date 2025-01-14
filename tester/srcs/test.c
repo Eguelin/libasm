@@ -6,37 +6,15 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/14 12:24:54 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/14 15:36:04 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define _GNU_SOURCE
-#include <stdio.h>
-#include <setjmp.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
-#include <fcntl.h>
-#include <errno.h>
+#include "test_utils.h"
 #include "libasm.h"
-
-#define RED "\033[0;31m"
-#define GREEN "\033[0;32m"
-#define YELLOW "\033[0;33m"
-#define BLUE "\033[0;34m"
-#define PURPLE "\033[0;35m"
-#define RESET "\033[0m"
 
 sigjmp_buf env;
 struct sigaction sa;
-
-void	segfault_handler(int sig);
-void	catch_segfault(void);
-void	default_sigaction(void);
-void	exit_error(char *str, char *free_str);
-char	*fdtostr(char *file);
-int		create_file(char *file, char *str);
 
 void	test_strlen(char **tab);
 void	test_strcpy(char **tab);
@@ -44,42 +22,6 @@ void	test_strcmp(char **tab);
 void	test_write(char **tab);
 void	test_read(char **tab);
 void	test_strdup(char **tab);
-
-#define ASSERT_EXPR_CONDITION(expr, condition) \
-	catch_segfault(); \
-	if (sigsetjmp(env, 1) == 0) \
-	{ \
-		(expr); \
-		if (condition) \
-			write(STDOUT_FILENO, GREEN"[OK] ", 13); \
-		else \
-			write(STDOUT_FILENO, RED"[KO] ", 13); \
-	} \
-	else \
-		write(STDOUT_FILENO, RED"[SEGV] ", 15); \
-	default_sigaction();
-
-#define ASSERT_NO_SEGFAULT(expr) \
-	catch_segfault(); \
-	if (sigsetjmp(env, 1) == 0) \
-	{ \
-		(expr); \
-		write(STDOUT_FILENO, GREEN"[OK] ", 13); \
-	} \
-	else \
-		write(STDOUT_FILENO, RED"[SEGV] ", 15); \
-	default_sigaction();
-
-#define EXPECT_SEGFAULT(expr) \
-	catch_segfault(); \
-	if (sigsetjmp(env, 1) == 0) \
-	{ \
-		(expr); \
-		write(STDOUT_FILENO, YELLOW"[WARN] ", 15); \
-	} \
-	else \
-		write(STDOUT_FILENO, GREEN"[OK] ", 13); \
-	default_sigaction();
 
 int main()
 {
@@ -98,74 +40,6 @@ int main()
 	test_write(tab);
 	test_read(tab);
 	test_strdup(tab);
-	return (0);
-}
-
-void	catch_segfault(void)
-{
-	sa.sa_handler = segfault_handler;
-	sa.sa_flags = SA_RESTART;
-	sigaction(SIGSEGV, &sa, NULL);
-}
-
-void	default_sigaction(void)
-{
-	sa.sa_handler = SIG_DFL;
-	sa.sa_flags = 0;
-	sigaction(SIGSEGV, &sa, NULL);
-}
-
-void	segfault_handler(int sig)
-{
-	(void)sig;
-	siglongjmp(env, 1);
-}
-
-void	exit_error(char *str, char *free_str)
-{
-	if (free_str)
-		free(free_str);
-	remove("test.txt");
-	printf(RED"%s\n"RESET, str);
-	exit(1);
-}
-
-char	*fdtostr(char *file)
-{
-	int		fd;
-	int		ret;
-	char	buf[4096];
-	char	*str;
-	size_t	size;
-
-	size = 0;
-	fd = open(file, O_RDONLY);
-	if (fd < 0)
-		return (NULL);
-	while ((ret = read(fd, buf, 4096)) > 0)
-		size += ret;
-	close(fd);
-	str = calloc(size + 1, sizeof(char));
-	if (!str)
-		return (NULL);
-	fd = open(file, O_RDONLY);
-	if (fd < 0)
-	{
-		free(str);
-		return (NULL);
-	}
-	read(fd, str, size);
-	close(fd);
-	return (str);
-}
-
-int	create_file(char *file, char *str)
-{
-	int fd = open(file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-	if (fd < 0)
-		return (1);
-	write(fd, str, strlen(str));
-	close(fd);
 	return (0);
 }
 
