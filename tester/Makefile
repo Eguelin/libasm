@@ -6,7 +6,7 @@
 #    By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/15 18:40:32 by eguelin           #+#    #+#              #
-#    Updated: 2025/01/15 11:34:38 by eguelin          ###   ########.fr        #
+#    Updated: 2025/01/15 17:23:19 by eguelin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -75,17 +75,17 @@ BONUS_DEP_FILES	= $(BONUS_OBJS_FILES:.o=.d)
 #                                     Rules                                    #
 # **************************************************************************** #
 
+all: $(NAME) $(BONUS)
+
 $(NAME): $(OBJS_FILES) libasm
 	$(CC) $(CFLAGS) $(OBJS_FILES) $(INCS) $(LIB) -o $(NAME)
 	printf $(COMP_MSG)
 	./$(NAME)
 
-bonus: $(OBJS_DIR)$(BONUS_DIR) $(BONUS_OBJS_FILES) libasm_bonus
+$(BONUS): $(OBJS_DIR)$(BONUS_DIR) $(BONUS_OBJS_FILES) libasm_bonus
 	$(CC) $(CFLAGS) $(BONUS_OBJS_FILES) $(INCS) $(LIB) -o $(BONUS)
 	printf $(BONUS_COMP_MSG)
 	./$(BONUS)
-
-all: $(NAME) bonus
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) $(INCS) -MMD -MP -c $< -o $@
