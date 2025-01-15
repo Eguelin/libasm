@@ -65,12 +65,13 @@ section .text
 		test r12, r12 ; if(r12 != NULL)
 		jne .loop
 
-	.end:
 		pop r15
 		pop r14
 		pop r13
 		pop r12
 		pop rbx
+
+	.end:
 		ret
 
 section .note.GNU-stack
