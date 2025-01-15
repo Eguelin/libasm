@@ -6,12 +6,12 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/15 10:52:26 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/15 11:27:03 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "test_utils.h"
-#include "libasm_bonus.h"
+#include "test_utils_bonus.h"
 
 sigjmp_buf env;
 struct sigaction sa;
@@ -20,7 +20,7 @@ void	test_atoi_base(void);
 void	test_list_push_front(void);
 void	test_list_size(void);
 void	test_list_sort(void);
-// void	test_list_remove_if(void);
+void	test_list_remove_if(void);
 
 int main()
 {
@@ -29,82 +29,14 @@ int main()
 	test_list_push_front();
 	test_list_size();
 	test_list_sort();
-	// test_list_remove_if();
+	test_list_remove_if();
 	return (0);
-}
-
-t_list	*list_push_front_c(t_list **begin_list, void *data)
-{
-	t_list	*new;
-
-	if (!(new = (t_list *)malloc(sizeof(t_list))))
-		return (NULL);
-	new->data = data;
-	new->next = *begin_list;
-	*begin_list = new;
-	return (new);
-}
-
-void	list_clear(t_list **begin_list)
-{
-	t_list	*tmp;
-
-	while (*begin_list)
-	{
-		tmp = *begin_list;
-		*begin_list = (*begin_list)->next;
-		free(tmp);
-	}
-}
-
-int	list_is_sort(t_list *begin_list, int (*cmp)())
-{
-	t_list	*tmp;
-
-	tmp = begin_list;
-	while (tmp && tmp->next)
-	{
-		if (cmp(tmp->data, tmp->next->data) > 0)
-			return (0);
-		tmp = tmp->next;
-	}
-	return (1);
-}
-
-int	list_size(t_list *begin_list)
-{
-	int		size;
-	t_list	*tmp;
-
-	size = 0;
-	tmp = begin_list;
-	while (tmp)
-	{
-		size++;
-		tmp = tmp->next;
-	}
-	return (size);
-}
-
-void	print_list(char *format, t_list *list)
-{
-	t_list	*tmp;
-
-	tmp = list;
-	if (tmp)
-	{
-		while (tmp)
-		{
-			printf(format, (char *)tmp->data);
-			tmp = tmp->next;
-		}
-	}
 }
 
 void	test_atoi_base(void)
 {
 	int		ret;
-	char	*tab[][3] = {{"-1", "01", "-1"},
+	char	*tab[34][3] = {{"-1", "01", "-1"},
 						{"1", "01", "1"},
 						{"-1", "0123456789", "-1"},
 						{ "1", "0123456789", "1"},
@@ -140,13 +72,11 @@ void	test_atoi_base(void)
 						{NULL, NULL, "0"}};
 
 	printf(PURPLE"\t--- ft_atoi_base ---\n"RESET);
-	for (int i = 0; i < 33; i++)
+	for (int i = 0; i < 34; i++)
 	{
 		ASSERT_EXPR_CONDITION(ret = ft_atoi_base(tab[i][0], tab[i][1]), ret == atoi(tab[i][2]));
 		printf(BLUE"ft_atoi_base(\"%s\", \"%s\") = %d\n"RESET, tab[i][0], tab[i][1], ret);
 	}
-
-	return ;
 }
 
 void	test_list_push_front(void)
@@ -169,8 +99,6 @@ void	test_list_push_front(void)
 	// NULL tests
 	ASSERT_NO_SEGFAULT(ft_list_push_front(NULL, "elem1"));
 	printf(BLUE"ft_list_push_front(NULL, \"elem1\")\n"RESET);
-
-	return ;
 }
 
 void	test_list_size(void)
@@ -260,4 +188,55 @@ void	test_list_sort(void)
 	// NULL tests
 	ASSERT_NO_SEGFAULT(ft_list_sort(NULL, &strcmp));
 	printf(BLUE"ft_list_sort(NULL, &strcmp)\n"RESET);
+	list_push_front_c(&list, "elem1");
+	ASSERT_NO_SEGFAULT(ft_list_sort(&list, NULL));
+	printf(BLUE"ft_list_sort(list, NULL)\n"RESET);
+	list_clear(&list);
+}
+
+void	test_list_remove_if(void)
+{
+	t_list	*list = NULL;
+	char	*tab[10][5] = {{"elem1", "elem3", "elem2", "elem4", "elem5"},
+						{"elem3", "elem2", "elem1", "elem5", "elem4"},
+						{"elem2", "elem1", "elem3", "elem4", "elem5"},
+						{"elem2", "elem3", "elem1", "elem5", "elem4"},
+						{"elem3", "elem1", "elem2", "elem4", "elem5"},
+						{"elem1", "elem2", "elem3", "elem4", "elem5"},
+						{"elem1", "elem3", "elem2", "elem5", "elem4"},
+						{"elem3", "elem2", "elem1", "elem4", "elem5"},
+						{"elem2", "elem1", "elem3", "elem5", "elem4"},
+						{"elem2", "elem3", "elem1", "elem4", "elem5"}};
+
+	// Classic tests
+	printf(PURPLE"\t--- ft_list_remove_if ---\n"RESET);
+	list_push_front_c(&list, "elem1");
+	ASSERT_EXPR_CONDITION(ft_list_remove_if(&list, "elem1", &strcmp, &free), list_size(list) == 0);
+	printf(BLUE"ft_list_remove_if(list, \"elem1\", &strcmp, &free) = ");
+	print_list("[%s] ", list);
+	printf("\n"RESET);
+	list_clear(&list);
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 5; j++)
+			list_push_front_c(&list, tab[i][j]);
+		ASSERT_EXPR_CONDITION(ft_list_remove_if(&list, "elem1", &strcmp, &free),
+		list_size(list) == 4 && !data_in_list(list, "elem1", &strcmp));
+		printf(BLUE"ft_list_remove_if(list, \"elem1\", &strcmp, &free) = ");
+		print_list("[%s] ", list);
+		printf("\n"RESET);
+		list_clear(&list);
+	}
+
+	// NULL tests
+	ASSERT_NO_SEGFAULT(ft_list_remove_if(NULL, "elem1", &strcmp, &free));
+	printf(BLUE"ft_list_remove_if(NULL, \"elem1\", &strcmp, &free)\n"RESET);
+	list_push_front_c(&list, "elem1");
+	ASSERT_NO_SEGFAULT(ft_list_remove_if(&list,"elem1", NULL, &free));
+	printf(BLUE"ft_list_remove_if(list, \"elem1\", NULL, &free)\n"RESET);
+	list_clear(&list);
+	list_push_front_c(&list, "elem1");
+	ASSERT_NO_SEGFAULT(ft_list_remove_if(&list, "elem1", &strcmp, NULL));
+	printf(BLUE"ft_list_remove_if(list, \"elem1\", &strcmp, NULL)\n"RESET);
+	list_clear(&list);
 }

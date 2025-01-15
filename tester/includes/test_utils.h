@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:28:33 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/14 15:39:24 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/15 11:24:56 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include <limits.h>
 # include <fcntl.h>
 # include <errno.h>
+# include "libasm.h"
 
 # define RED "\033[0;31m"
 # define GREEN "\033[0;32m"
@@ -39,19 +40,6 @@ void	default_sigaction(void);
 void	exit_error(char *str, char *free_str);
 char	*fdtostr(char *file);
 int		create_file(char *file, char *str);
-
-#define ASSERT_CONDITION(condition) \
-	catch_segfault(); \
-	if (sigsetjmp(env, 1) == 0) \
-	{ \
-		if (condition) \
-			write(STDOUT_FILENO, GREEN"[OK] ", 13); \
-		else \
-			write(STDOUT_FILENO, RED"[KO] ", 13); \
-	} \
-	else \
-		write(STDOUT_FILENO, RED"[SEGV] ", 15); \
-	default_sigaction();
 
 #define ASSERT_EXPR_CONDITION(expr, condition) \
 	catch_segfault(); \

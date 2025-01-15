@@ -6,7 +6,7 @@
 #    By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/15 18:40:32 by eguelin           #+#    #+#              #
-#    Updated: 2025/01/14 16:28:15 by eguelin          ###   ########.fr        #
+#    Updated: 2025/01/15 11:34:38 by eguelin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,9 +23,9 @@ OBJS_DIR	= .objs/
 SRCS_DIR	= srcs/
 INCS_DIR	= includes/
 LIB_DIR		= ..
-CC			= cc
+CC			= gcc
 CFLAGS		= -Wall -Wextra -Werror -fsanitize=address -g
-INCS		= -I $(INCS_DIR) -I ../$(INCS_DIR)
+INCS		= -I $(INCS_DIR)
 LIB			= -L$(LIB_DIR) -lasm
 RM			= rm -fr
 
@@ -60,11 +60,16 @@ ALL_FILES	= test.c \
 			  test_utils.c
 
 ALL_BONUS_FILES	= test_bonus.c \
-				  test_utils.c
+				  test_utils.c \
+				  test_utils_bonus.c
 
 OBJS_FILES	= $(addprefix $(OBJS_DIR), $(ALL_FILES:.c=.o))
 
+DEP_FILES	= $(OBJS_FILES:.o=.d)
+
 BONUS_OBJS_FILES	= $(addprefix $(OBJS_DIR), $(ALL_BONUS_FILES:.c=.o))
+
+BONUS_DEP_FILES	= $(BONUS_OBJS_FILES:.o=.d)
 
 # **************************************************************************** #
 #                                     Rules                                    #
@@ -83,7 +88,7 @@ bonus: $(OBJS_DIR)$(BONUS_DIR) $(BONUS_OBJS_FILES) libasm_bonus
 all: $(NAME) bonus
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.c | $(OBJS_DIR)
-	$(CC) $(CFLAGS) $(INCS) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCS) -MMD -MP -c $< -o $@
 
 clean:
 	$(MAKE) clean -sC $(LIB_DIR)
@@ -107,3 +112,4 @@ libasm_bonus:
 $(OBJS_DIR):
 	mkdir -p $@
 
+-include $(DEP_FILES) $(BONUS_DEP_FILES)
