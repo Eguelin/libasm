@@ -4,7 +4,7 @@ section .text
 	global ft_strcmp
 
 	ft_strcmp:
-		xor rax, rax ; rax = 0
+		xor eax, eax ; eax = 0
 		xor rcx, rcx ; rcx = 0
 
 	.loop:
@@ -20,7 +20,7 @@ section .text
 		jmp .loop
 
 	.diff:
-		xor rdx, rdx ; rdx = 0
+		xor edx, edx ; edx = 0
 		mov dl, [rsi + rcx] ; dl = *s2
 		sub eax, edx ; eax = (int)al - (int)dl
 
