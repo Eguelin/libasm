@@ -15,12 +15,11 @@ section .text
 		mov rdi, rax ; rdi = length
 		call malloc wrt ..plt ; malloc(rdi)
 
+		pop rsi ; restore pointer to string
+
 		test rax, rax ; check if malloc failed
 		jz .end
 
-		pop rdi ; restore pointer to string
-
-		mov rsi, rdi ; rsi = s
 		mov rdi, rax ; rdi = malloc(length)
 		call ft_strcpy ; ft_strcpy(rdi, rsi)
 
