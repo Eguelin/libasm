@@ -22,5 +22,3 @@ section .text
 
 		mov rax, -1 ; return -1
 		ret
-
-section .note.GNU-stack

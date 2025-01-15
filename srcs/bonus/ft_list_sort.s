@@ -68,5 +68,3 @@ section .text
 
 	.end:
 		ret
-
-section .note.GNU-stack
