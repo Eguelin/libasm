@@ -1,4 +1,14 @@
 ;int	ft_atoi_base(char *str, char *base);
+section .rodata
+	white_space:
+		times 9 db 0
+		db 1, 1, 1, 1, 1 ; '\t', '\n', '\v', '\f', '\r'
+		times 18 db 0
+		db 1 ; ' '
+		times 223 db 0
+
+section .bss
+	base_set resb 256
 
 section .text
 	global	ft_atoi_base
@@ -19,13 +29,23 @@ section .text
 
 		pop rdi
 
-		xor eax, eax ; set return value to 0
+		xor rax, rax ; set return value to 0
 
-	.check_base:
 		cmp edx, 1 ; if (strlen(base) <= 1)
 		jle .end
 
 		xor r8, r8 ; r8 = 0
+		xor r9, r9 ; r9 = 0
+		lea r11 , [rel base_set] ; r11 = base_set
+		lea r10, [rel white_space] ; r10 = white_space
+
+	.reset_base_set:
+		cmp r9, 256 ; if (r9 == 256)
+		je .loop_check
+
+		mov byte [r11 + r9], -1 ; base_set[i] = -1
+		inc r9 ; i++
+		jmp .reset_base_set
 
 	.loop_check:
 		cmp byte [rsi + r8], 0 ; if (base[i] == 0)
@@ -33,40 +53,21 @@ section .text
 
 		xor r9, r9 ; r9 = 0
 
-		mov r10b, byte [rsi + r8] ; r10b = base[i]
-
-		cmp r10b, 43 ; if (base[i] == '+')
+		mov r9b, byte [rsi + r8] ; r9b = base[i]
+		cmp byte [r10 + r9], 1 ; if (white_space[base[i]] == 0)
 		je .end
 
-		cmp r10b, 45 ; if (base[i] == '-')
+		cmp r9b, 45 ; if (str[0] == '-')
 		je .end
 
-		cmp r10b, 32 ; if (base[i] == ' ')
+		cmp r9b, 43 ; if (str[0] == '+')
 		je .end
 
-		cmp r10b, 9 ; if (base[i] < '\t') else if (base[i] == '\t')
-		jl .loop_check
-		je .end
+		cmp byte [r11 + r9], -1 ; if (base_set[base[i]] == 1)
+		jne .end
 
-		cmp r10b, 13 ; if (base[i] <= '\r')
-		jle .end
+		mov byte [r11 + r9], r8b ; base_set[base[i]] = 1
 
-	.check_duplicate:
-
-		cmp byte [rsi + r9], 0 ; if (base[j] == 0)
-		je .check_duplicate_end
-
-		cmp r9, r8 ; if (j == i)
-		je .check_duplicate_inc
-
-		cmp r10b , byte [rsi + r9] ; if (base[i] == base[j])
-		je .end
-
-	.check_duplicate_inc:
-		inc r9 ; j++
-		jmp .check_duplicate
-
-	.check_duplicate_end:
 		inc r8 ; i++
 		jmp .loop_check
 
@@ -75,20 +76,9 @@ section .text
 
 	.skip_spaces:
 		mov r9b, byte [rdi] ; r9b = *str
+		cmp byte [r10 + r9], 0 ; if (white_space[*str] == 0)
+		je .check_sign
 
-		cmp r9b, 32 ; if (base[i] == ' ')
-		je .inc_str
-
-		cmp r9b, 9 ; if (base[i] < '\t') else if (base[i] == '\t')
-		jl .check_sign
-		je .inc_str
-
-		cmp r9b, 13 ; if (base[i] <= '\r')
-		jle .inc_str
-
-		jmp .check_sign
-
-	.inc_str :
 		inc rdi ; str++
 		jmp .skip_spaces
 
@@ -115,16 +105,9 @@ section .text
 	.loop_atoi:
 		xor rcx, rcx ; ecx = 0
 		mov r9b, byte [rdi] ; r9b = *str
-
-	.loop_base:
-		cmp r9b, byte [rsi + rcx] ; if (*str == base[i])
-		je .base_end
-
-		inc rcx ; i++
-		cmp byte [rsi + rcx], 0 ; if (base[i] == 0)
+		mov cl, byte [r11 + r9] ; cx = base_set[*str]
+		cmp cl, -1 ; if (base_set[*str] == -1)
 		je .end_atoi
-
-		jmp .loop_base
 
 	.base_end:
 		push rdx ; save strlen(base)
