@@ -4,23 +4,27 @@ section .text
 	global ft_strcmp
 
 	ft_strcmp:
-		mov ah, [rdi] ; ah = *s1
+		xor rax, rax ; rax = 0
+		xor rcx, rcx ; rcx = 0
 
-		cmp ah, [rsi] ; if (*s1 == *s2)
+	.loop:
+		mov al, [rdi + rcx] ; al = *s1
+
+		cmp al, [rsi + rcx] ; if (*s1 == *s2)
 		jne .diff
 
-		test ah, ah ; if (*s1 == 0)
+		test al, al ; if (*s1 == 0)
 		jz .end
 
-		inc rdi ; s1++
-		inc rsi ; s2++
-		jmp ft_strcmp
+		inc rcx ; rcx++
+		jmp .loop
 
 	.diff:
-		sub	ah, [rsi] ; ah = *s1 - *s2
+		xor rdx, rdx ; rdx = 0
+		mov dl, [rsi + rcx] ; dl = *s2
+		sub eax, edx ; eax = (int)al - (int)dl
 
 	.end:
-		movsx eax, ah ; eax = (int)ah
 		ret
 
 section .note.GNU-stack
