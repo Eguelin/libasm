@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/15 13:55:57 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/15 18:53:09 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,10 @@ void test_strcpy(char **tab)
 		free(dest);
 		i++;
 	}
+	dest = strdup("Epitech");
+	ASSERT_EXPR_CONDITION(ft_strcpy(dest, "42"), !strcmp(dest, "42"));
+	printf(BLUE"ft_strcpy(Epitech, \"42\") = \"%s\"\n"RESET, dest);
+	free(dest);
 
 	// NULL tests
 	EXPECT_SEGFAULT(ft_strcpy(destNULL, NULL));
