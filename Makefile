@@ -6,7 +6,7 @@
 #    By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/15 18:40:32 by eguelin           #+#    #+#              #
-#    Updated: 2025/01/14 15:59:02 by eguelin          ###   ########.fr        #
+#    Updated: 2025/01/15 11:28:09 by eguelin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,6 @@
 NAME		= libasm.a
 OBJS_DIR	= .objs/
 SRCS_DIR	= srcs/
-INCS_DIR	= includes/
 AS			= nasm
 AFLAGS		= -f elf64
 ARC			= ar -rcs
