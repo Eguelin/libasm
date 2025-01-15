@@ -103,15 +103,15 @@ section .text
 		jmp .check_sign
 
 	.loop_atoi:
-		xor rcx, rcx ; ecx = 0
+		xor ecx, ecx ; ecx = 0
 		mov r9b, byte [rdi] ; r9b = *str
-		mov cl, byte [r11 + r9] ; cx = base_set[*str]
+		mov cl, byte [r11 + r9] ; cl = base_set[*str]
 		cmp cl, -1 ; if (base_set[*str] == -1)
 		je .end_atoi
 
 	.base_end:
 		push rdx ; save strlen(base)
-		mul edx; eax *= strlen(base)
+		mul edx; ea\dx *= strlen(base)
 		pop rdx ; restore strlen(base)
 
 		add eax, ecx ; eax += ecx
