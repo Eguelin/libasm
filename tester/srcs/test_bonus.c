@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/15 11:27:03 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/15 15:35:25 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int main()
 void	test_atoi_base(void)
 {
 	int		ret;
-	char	*tab[34][3] = {{"-1", "01", "-1"},
+	char	*tab[36][3] = {{"-1", "01", "-1"},
 						{"1", "01", "1"},
 						{"-1", "0123456789", "-1"},
 						{ "1", "0123456789", "1"},
@@ -67,12 +67,14 @@ void	test_atoi_base(void)
 						{"444" , "4", "0"},
 						{"55", "012345+", "0"},
 						{"55", "012345\t", "0"},
+						{"55", "012345 ", "0"},
+						{"55", "0123455", "0"},
 						{NULL, "01", "0"},
 						{"1", NULL, "0"},
 						{NULL, NULL, "0"}};
 
 	printf(PURPLE"\t--- ft_atoi_base ---\n"RESET);
-	for (int i = 0; i < 34; i++)
+	for (int i = 0; i < 36; i++)
 	{
 		ASSERT_EXPR_CONDITION(ret = ft_atoi_base(tab[i][0], tab[i][1]), ret == atoi(tab[i][2]));
 		printf(BLUE"ft_atoi_base(\"%s\", \"%s\") = %d\n"RESET, tab[i][0], tab[i][1], ret);
