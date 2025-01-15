@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/15 11:25:32 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/15 13:55:57 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ int main()
 		"lorem ipsum dolor sit amet",
 		"test",
 		"3 + 3 = 9",
+		"\211",
 		"",
 		NULL};
 
@@ -92,7 +93,7 @@ void test_strcpy(char **tab)
 		if (!dest)
 			exit_error("failed to allocate str", NULL);
 		ASSERT_EXPR_CONDITION(ft_strcpy(dest, tab[i]), !strcmp(dest, tab[i]) && dest != tab[i]);
-		printf(BLUE"ft_strcpy(dest, \"%s\")\n"RESET, dest);
+		printf(BLUE"ft_strcpy(dest, \"%s\") = \"%s\"\n"RESET, tab[i], dest);
 		free(dest);
 		i++;
 	}
