@@ -6,7 +6,7 @@
 #    By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/15 18:40:32 by eguelin           #+#    #+#              #
-#    Updated: 2025/01/15 11:28:09 by eguelin          ###   ########.fr        #
+#    Updated: 2025/01/15 17:14:11 by eguelin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -95,11 +95,11 @@ clean:
 
 fclean: clean
 	$(RM) $(NAME)
-	$(RM) $(TEST)
-	$(RM) $(TEST_BONUS)
 	printf $(FULL_CLEAN_MSG)
 
 re: fclean all
+
+re_bonus: fclean bonus
 
 $(OBJS_DIR):
 	mkdir -p $@
