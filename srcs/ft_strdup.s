@@ -10,7 +10,7 @@ section .text
 		push rdi ; save pointer to string
 
 		call ft_strlen ; ft_strlen(rdi)
-		add rax, 1 ; length++
+		inc rax ; length++
 
 		mov rdi, rax ; rdi = length
 		call malloc wrt ..plt ; malloc(rdi)
