@@ -111,7 +111,7 @@ section .text
 
 	.base_end:
 		push rdx ; save strlen(base)
-		mul edx; ea\dx *= strlen(base)
+		mul edx; edx *= strlen(base)
 		pop rdx ; restore strlen(base)
 
 		add eax, ecx ; eax += ecx
