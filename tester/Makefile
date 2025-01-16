@@ -6,7 +6,7 @@
 #    By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/15 18:40:32 by eguelin           #+#    #+#              #
-#    Updated: 2025/01/16 14:51:05 by eguelin          ###   ########.fr        #
+#    Updated: 2025/01/16 16:28:18 by eguelin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ SRCS_DIR	= srcs/
 INCS_DIR	= includes/
 LIB_DIR		= ../
 CC			= gcc
-CFLAGS		= -Wall -Wextra -Werror -g
+CFLAGS		= -Wall -Wextra -Werror -fsanitize=address -g
 INCS		= -I $(INCS_DIR) -I $(LIB_DIR)$(INCS_DIR)
 LIB			= -L$(LIB_DIR) -lasm
 RM			= rm -fr
