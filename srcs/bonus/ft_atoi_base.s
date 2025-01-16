@@ -41,13 +41,13 @@ section .text
 
 	.reset_base_set:
 		cmp r9, 256 ; if (r9 == 256)
-		je .loop_check
+		je .set_base_set
 
 		mov byte [r11 + r9], -1 ; base_set[i] = -1
 		inc r9 ; i++
 		jmp .reset_base_set
 
-	.loop_check:
+	.set_base_set:
 		cmp byte [rsi + r8], 0 ; if (base[i] == 0)
 		je .start_atoi
 
@@ -66,10 +66,10 @@ section .text
 		cmp byte [r11 + r9], -1 ; if (base_set[base[i]] == 1)
 		jne .end
 
-		mov byte [r11 + r9], r8b ; base_set[base[i]] = 1
+		mov byte [r11 + r9], r8b ; base_set[base[i]] = i
 
 		inc r8 ; i++
-		jmp .loop_check
+		jmp .set_base_set
 
 	.start_atoi:
 		xor r8, r8 ; r8 = 0
