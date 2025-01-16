@@ -5,11 +5,11 @@ section .text
 	extern __errno_location
 
 	ft_read:
-		mov rax, 0 ; syscall number for read
+		xor rax, rax ; rax = 0 (syscall number for read)
 		syscall
 
-		cmp rax, 0 ; check for error
-		jl .errno
+		test rax, -1 ; check for error
+		js .errno
 
 		ret
 
