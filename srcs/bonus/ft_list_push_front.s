@@ -19,13 +19,11 @@ section .text
 		pop rdi
 
 		test rax, rax ;check if malloc failed
-		jz .add_elem
+		jz .end
 
 		mov [rax], rsi ;new_elem->data = data
 		mov rsi, [rdi]
 		mov [rax + 8], rsi ;new_elem->next = *begin_list
-
-	.add_elem:
 		mov	[rdi], rax ;*begin_list = new_elem
 
 	.end:
