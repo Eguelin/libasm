@@ -6,11 +6,11 @@
 #    By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/03/15 18:40:32 by eguelin           #+#    #+#              #
-#    Updated: 2025/01/16 16:28:18 by eguelin          ###   ########.fr        #
+#    Updated: 2025/01/16 17:37:41 by eguelin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re libasm libasm_bonus
 .SILENT:
 
 # **************************************************************************** #
