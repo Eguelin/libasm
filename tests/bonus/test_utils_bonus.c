@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/15 11:14:20 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/17 11:07:04 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/17 20:14:01 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ t_list	*list_push_front_c(t_list **begin_list, void *data)
 	return (new);
 }
 
-void	list_clear(t_list **begin_list)
+void	list_clear(t_list **begin_list, void (*free_fct)(void *))
 {
 	t_list	*tmp;
 
@@ -32,6 +32,8 @@ void	list_clear(t_list **begin_list)
 	{
 		tmp = *begin_list;
 		*begin_list = (*begin_list)->next;
+		if (free_fct)
+			free_fct(tmp->data);
 		free(tmp);
 	}
 }

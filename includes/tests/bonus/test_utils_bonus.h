@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/15 11:13:39 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/17 13:00:38 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/17 20:16:30 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 # include "libasm_bonus.h"
 
 t_list	*list_push_front_c(t_list **begin_list, void *data);
-void	list_clear(t_list **begin_list);
+void	list_clear(t_list **begin_list, void (*free_fct)(void *));
 int		list_is_sort(t_list *begin_list, int (*cmp)());
 int		list_size(t_list *begin_list);
 int		data_in_list(t_list *begin_list, void *data, int (*cmp)());

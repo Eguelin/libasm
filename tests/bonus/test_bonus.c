@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/17 11:07:08 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/17 20:18:21 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ void	test_list_push_front(void)
 		print_list("[%s] ", list);
 		printf("\n"RESET);
 	}
-	list_clear(&list);
+	list_clear(&list, NULL);
 
 	// NULL tests
 	ASSERT_NO_SEGFAULT(ft_list_push_front(NULL, "elem1"));
@@ -127,7 +127,7 @@ void	test_list_size(void)
 		printf(BLUE"ft_list_size(list) = %d (", size);
 		print_list("[%s] ", list);
 		printf(")\n"RESET);
-		list_clear(&list);
+		list_clear(&list, NULL);
 	}
 
 	// NULL tests
@@ -166,7 +166,7 @@ void	test_list_sort(void)
 		printf(BLUE"ft_list_sort(list, &strcmp) = ");
 		print_list("[%s] ", list);
 		printf("\n"RESET);
-		list_clear(&list);
+		list_clear(&list, NULL);
 	}
 	for (int i = 0; i < 6; i++)
 	{
@@ -176,7 +176,7 @@ void	test_list_sort(void)
 		printf(BLUE"ft_list_sort(list, &strcmp) = ");
 		print_list("[%s] ", list);
 		printf("\n"RESET);
-		list_clear(&list);
+		list_clear(&list, NULL);
 	}
 	for (int i = 0; i < 10; i++)
 	{
@@ -186,7 +186,7 @@ void	test_list_sort(void)
 		printf(BLUE"ft_list_sort(list, &strcmp) = ");
 		print_list("[%s] ", list);
 		printf("\n"RESET);
-		list_clear(&list);
+		list_clear(&list, NULL);
 	}
 
 	// NULL tests
@@ -195,7 +195,7 @@ void	test_list_sort(void)
 	list_push_front_c(&list, "elem1");
 	ASSERT_NO_SEGFAULT(ft_list_sort(&list, NULL));
 	printf(BLUE"ft_list_sort(list, NULL)\n"RESET);
-	list_clear(&list);
+	list_clear(&list, NULL);
 }
 
 void	test_list_remove_if(void)
@@ -211,25 +211,37 @@ void	test_list_remove_if(void)
 						{"elem3", "elem2", "elem1", "elem4", "elem5"},
 						{"elem2", "elem1", "elem3", "elem5", "elem4"},
 						{"elem2", "elem3", "elem1", "elem4", "elem5"}};
+	char	*str;
 
 	// Classic tests
 	printf(PURPLE"\t--- ft_list_remove_if ---\n"RESET);
-	list_push_front_c(&list, "elem1");
+	str = strdup("elem1");
+	if (!str)
+		exit_error("failed to allocate str", NULL);
+	list_push_front_c(&list, str);
 	ASSERT_EXPR_CONDITION(ft_list_remove_if(&list, "elem1", &strcmp, &free), list_size(list) == 0);
 	printf(BLUE"ft_list_remove_if(list, \"elem1\", &strcmp, &free) = ");
 	print_list("[%s] ", list);
 	printf("\n"RESET);
-	list_clear(&list);
+	list_clear(&list, &free);
 	for (int i = 0; i < 10; i++)
 	{
 		for (int j = 0; j < 5; j++)
-			list_push_front_c(&list, tab[i][j]);
+		{
+			str = strdup(tab[i][j]);
+			if (!str)
+			{
+				list_clear(&list, &free);
+				exit_error("failed to allocate str", NULL);
+			}
+			list_push_front_c(&list, str);
+		}
 		ASSERT_EXPR_CONDITION(ft_list_remove_if(&list, "elem1", &strcmp, &free),
 		list_size(list) == 4 && !data_in_list(list, "elem1", &strcmp));
 		printf(BLUE"ft_list_remove_if(list, \"elem1\", &strcmp, &free) = ");
 		print_list("[%s] ", list);
 		printf("\n"RESET);
-		list_clear(&list);
+		list_clear(&list, &free);
 	}
 
 	// NULL tests
@@ -238,9 +250,9 @@ void	test_list_remove_if(void)
 	list_push_front_c(&list, "elem1");
 	ASSERT_NO_SEGFAULT(ft_list_remove_if(&list,"elem1", NULL, &free));
 	printf(BLUE"ft_list_remove_if(list, \"elem1\", NULL, &free)\n"RESET);
-	list_clear(&list);
+	list_clear(&list, NULL);
 	list_push_front_c(&list, "elem1");
 	ASSERT_NO_SEGFAULT(ft_list_remove_if(&list, "elem1", &strcmp, NULL));
 	printf(BLUE"ft_list_remove_if(list, \"elem1\", &strcmp, NULL)\n"RESET);
-	list_clear(&list);
+	list_clear(&list, NULL);
 }
