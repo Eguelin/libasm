@@ -2,6 +2,7 @@
 
 section .text
 	global ft_list_remove_if
+	extern free
 
 	ft_list_remove_if:
 		test rdi, rdi ; if(begin_list == NULL)
@@ -22,7 +23,7 @@ section .text
 		push r14
 		push r15
 
-		mov rbx, rdi ; rbx = begin_list
+		mov rbx, rdi ; rbx = **begin_list
 		mov r12, [rdi] ; r12 = *begin_list
 		mov r13, rdx ; r13 = cmp
 		mov r14, rcx ; r14 = free_fct
@@ -31,26 +32,27 @@ section .text
 	.loop:
 		push rsi
 
-		mov rdi, [r12] ; rdi = rdi->data
+		mov rdi, [r12] ; rdi = r12->data
 		call r13 ; cmp(rdi, data_ref)
 
 		test eax, eax ; if(cmp(rdi, data_ref) != 0)
 		jne .no_free
 
-		mov rdi, r12 ; rdi = r12
+		mov rdi, [r12] ; rdi = r12->data
+		call r14 ; free_fct(rdi)
+
+		mov rdi, r12 ; rdi = r12->data
 		mov r12, [r12 + 8] ; r12 = r12->next
+		call free wrt ..plt ; free(rdi)
 
 		test r15, r15 ; if(r15 != NULL)
-		jne .free
+		jne .no_first
 
 		mov [rbx], r12 ; *begin_list = r12
-		call r14 ; free_fct(rdi)
 
 		jmp .next
 
-	.free:
-		call r14 ; free_fct(rdi)
-
+	.no_first:
 		mov [r15 + 8], r12 ; r15->next = r12
 
 		jmp .next
