@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/16 14:51:37 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/17 10:43:29 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,7 +198,6 @@ void	test_write(char **tab)
 			free(str);
 		close(fd);
 	}
-	remove("test.txt");
 
 	// errno test
 	ret = 0;
@@ -211,6 +210,22 @@ void	test_write(char **tab)
 	errno = -1;
 	ASSERT_EXPR_CONDITION(ret = ft_write(1, NULL, 4), ret == -1 && errno == EFAULT);
 	printf(BLUE"ft_write(1, NULL, 4) = %ld (errno = %d)\n"RESET, ret, errno);
+
+	// Ferry big string test
+	ret = 0;
+	str = calloc(INT_MAX, sizeof(char));
+	if (!str)
+		exit_error("failed to allocate str[INT_MAX]", NULL);
+	str = memset(str, 'c', INT_MAX - 1);
+	fd = open("test.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (fd < 0)
+		exit_error("failed to open test.txt", str);
+	errno = -1;
+	ASSERT_EXPR_CONDITION(ret = write(fd, str, INT_MAX), ret == (INT_MAX - (INT_MAX % 4096)) && errno == -1);
+	printf(BLUE"ft_write(fd, str[INT_MAX], %d) = %ld\n"RESET, INT_MAX , ret);
+	close(fd);
+	free(str);
+	remove("test.txt");
 }
 
 void	test_read(char **tab)
@@ -242,11 +257,29 @@ void	test_read(char **tab)
 		close(fd);
 		i++;
 	}
-	remove("test.txt");
 
 	// errno test
 	ASSERT_EXPR_CONDITION(ret = ft_read(-1, "test", 4), ret == -1 && errno == EBADF);
 	printf(BLUE"ft_read(-1, \"test\", 4) = %ld (errno = %d)\n"RESET, ret, errno);
+
+	// Ferry big string test
+	str = calloc(INT_MAX, sizeof(char));
+	if (!str)
+		exit_error("failed to allocate str[INT_MAX]", NULL);
+	fd = open("test.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (fd < 0)
+		exit_error("failed to open test.txt", str);
+	write(fd, str, INT_MAX);
+	close(fd);
+	fd = open("test.txt", O_RDONLY);
+	if (fd < 0)
+		exit_error("failed to open test.txt", str);
+	errno = -1;
+	ASSERT_EXPR_CONDITION(ret = ft_read(fd, str, INT_MAX), ret == (INT_MAX - (INT_MAX % 4096)) && errno == -1);
+	printf(BLUE"ft_read(fd, str[INT_MAX], %d) = %ld\n"RESET, INT_MAX , ret);
+	close(fd);
+	free(str);
+	remove("test.txt");
 }
 
 void	test_strdup(char **tab)
