@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/15 11:14:20 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/17 20:14:01 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/18 15:06:03 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,4 +94,14 @@ void	print_list(char *format, t_list *list)
 			tmp = tmp->next;
 		}
 	}
+}
+
+int	int_cmp(int *a, int *b)
+{
+	return (a - b);
+}
+
+void	inc_int(void *a)
+{
+	(*(int *)a)++;
 }

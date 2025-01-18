@@ -6,7 +6,7 @@
 /*   By: eguelin <eguelin@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/15 15:41:05 by eguelin           #+#    #+#             */
-/*   Updated: 2025/01/17 20:18:21 by eguelin          ###   ########.fr       */
+/*   Updated: 2025/01/18 15:05:34 by eguelin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,18 +212,16 @@ void	test_list_remove_if(void)
 						{"elem2", "elem1", "elem3", "elem5", "elem4"},
 						{"elem2", "elem3", "elem1", "elem4", "elem5"}};
 	char	*str;
+	int		nb;
 
 	// Classic tests
 	printf(PURPLE"\t--- ft_list_remove_if ---\n"RESET);
-	str = strdup("elem1");
-	if (!str)
-		exit_error("failed to allocate str", NULL);
-	list_push_front_c(&list, str);
-	ASSERT_EXPR_CONDITION(ft_list_remove_if(&list, "elem1", &strcmp, &free), list_size(list) == 0);
-	printf(BLUE"ft_list_remove_if(list, \"elem1\", &strcmp, &free) = ");
-	print_list("[%s] ", list);
-	printf("\n"RESET);
-	list_clear(&list, &free);
+	nb = 0;
+	list_push_front_c(&list, &nb);
+	ASSERT_EXPR_CONDITION(ft_list_remove_if(&list, &nb, &int_cmp, &inc_int), list_size(list) == 0 && nb == 1);
+	printf(BLUE"ft_list_remove_if(list, &nb, &int_cmp, &inc_int) = ");
+	print_list("[%d] ", list);
+	printf("(nb = %d)\n"RESET, nb);
 	for (int i = 0; i < 10; i++)
 	{
 		for (int j = 0; j < 5; j++)
