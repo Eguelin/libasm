@@ -16,18 +16,7 @@
 
 1. [Introduction NASM](#i-introduction-nasm)
 2. [Mandatory Part](#ii-mandatory-part)
-	- [ft_strlen](#ft_strlen)
-	- [ft_strcpy](#ft_strcpy)
-	- [ft_strcmp](#ft_strcmp)
-	- [ft_write](#ft_write)
-	- [ft_read](#ft_read)
-	- [ft_strdup](#ft_strdup)
 3. [Bonus Part](#iii-bonus-part)
-	- [ft_atoi_base](#ft_atoi_base)
-	- [ft_list_push_front](#ft_list_push_front)
-	- [ft_list_size](#ft_list_size)
-	- [ft_list_sort](#ft_list_sort)
-	- [ft_list_remove_if](#ft_list_remove_if)
 4. [Build Project](#iv-build-project)
 5. [My Ressurces](#v-my-ressurces)
 
@@ -49,63 +38,53 @@ The goal of this project is to familiarize yourself with the assembly language.
 
 ### Mandatory Functions:
 
-#### ft_strlen:
-```c
-size_t ft_strlen(const char *s);
-```
-The `ft_strlen()` function calculates the length of the string `s`, excluding the terminating null byte (`'\0'`).
+- `ft_strlen`:
+	```c
+	size_t ft_strlen(const char *s);
+	```
+	The `ft_strlen()` function calculates the length of the string `s`, excluding the terminating null byte (`'\0'`).
 
-For more info: `man 3 strlen`
+	For more info: `man 3 strlen`
 
----
+- `ft_strcpy`:
+	```c
+	char *ft_strcpy(char *dst, const char *src);
+	```
+	The `ft_strcpy()` function copies the string `src` to `dst` (including the terminating null byte (`'\0'`)).
 
-#### ft_strcpy:
-```c
-char *ft_strcpy(char *dst, const char *src);
-```
-The `ft_strcpy()` function copies the string `src` to `dst` (including the terminating null byte (`'\0'`)).
+	For more info: `man 3 strcpy`
 
-For more info: `man 3 strcpy`
+- `ft_strcmp`:
+	```c
+	int ft_strcmp(const char *s1, const char *s2);
+	```
+	The `ft_strcmp()` function compares the two strings `s1` and `s2`. It returns an integer less than, equal to, or greater than zero if `s1` is found, respectively, to be less than, to match, or be greater than `s2`.
 
----
+	For more info: `man 3 strcmp`
 
-#### ft_strcmp:
-```c
-int ft_strcmp(const char *s1, const char *s2);
-```
-The `ft_strcmp()` function compares the two strings `s1` and `s2`. It returns an integer less than, equal to, or greater than zero if `s1` is found, respectively, to be less than, to match, or be greater than `s2`.
+- `ft_write`:
+	```c
+	ssize_t ft_write(int fd, const void *buf, size_t count);
+	```
+	The `ft_write()` function writes `count` bytes from buffer `buf` to the file descriptor `fd`. On success, the number of bytes written is returned. On error, `-1` is returned, and `errno` is set appropriately.
 
-For more info: `man 3 strcmp`
+	For more info: `man 2 write`
 
----
+- `ft_read`:
+	```c
+	ssize_t ft_read(int fd, void *buf, size_t count);
+	```
+	The `ft_read()` function reads `count` bytes from file descriptor `fd` into the buffer starting at `buf`. On success, the number of bytes read is returned. On error, `-1` is returned, and `errno` is set appropriately.
 
-#### ft_write:
-```c
-ssize_t ft_write(int fd, const void *buf, size_t count);
-```
-The `ft_write()` function writes `count` bytes from buffer `buf` to the file descriptor `fd`. On success, the number of bytes written is returned. On error, `-1` is returned, and `errno` is set appropriately.
+	For more info: `man 2 read`
 
-For more info: `man 2 write`
+- `ft_strdup`:
+	```c
+	char *ft_strdup(const char *s);
+	```
+	The `ft_strdup()` function returns a pointer to a new string that is a duplicate of the string `s`. Memory for the new string is obtained with `malloc`, and can be freed with `free`.
 
----
-
-#### ft_read:
-```c
-ssize_t ft_read(int fd, void *buf, size_t count);
-```
-The `ft_read()` function reads `count` bytes from file descriptor `fd` into the buffer starting at `buf`. On success, the number of bytes read is returned. On error, `-1` is returned, and `errno` is set appropriately.
-
-For more info: `man 2 read`
-
----
-
-#### ft_strdup:
-```c
-char *ft_strdup(const char *s);
-```
-The `ft_strdup()` function returns a pointer to a new string that is a duplicate of the string `s`. Memory for the new string is obtained with `malloc`, and can be freed with `free`.
-
-For more info: `man 3 strdup`
+	For more info: `man 3 strdup`
 
 ## III. Bonus Part
 
@@ -120,43 +99,35 @@ typedef struct s_list {
 
 ### Bonus Functions:
 
-#### ft_atoi_base:
-```c
-int ft_atoi_base(const char *str, int base);
-```
-The `ft_atoi_base()` function converts the initial portion of the string pointed to by `str` to an integer of type `int`, using the base specified by `base`.
+- `ft_atoi_base`:
+	```c
+	int ft_atoi_base(const char *str, int base);
+	```
+	The `ft_atoi_base()` function converts the initial portion of the string pointed to by `str` to an integer of type `int`, using the base specified by `base`.
 
----
+- `ft_list_push_front`:
+	```c
+	void ft_list_push_front(t_list **begin_list, void *data);
+	```
+	The `ft_list_push_front()` function adds a new element of type `t_list` to the beginning of the list.
 
-#### ft_list_push_front:
-```c
-void ft_list_push_front(t_list **begin_list, void *data);
-```
-The `ft_list_push_front()` function adds a new element of type `t_list` to the beginning of the list.
+- `ft_list_size`:
+	```c
+	int ft_list_size(t_list *begin_list);
+	```
+	The `ft_list_size()` function returns the number of elements in the list.
 
----
+- `ft_list_sort`:
+	```c
+	void ft_list_sort(t_list **begin_list, int (*cmp)());
+	```
+	The `ft_list_sort()` function sorts the list’s elements by ascending order using the function `cmp` to compare data.
 
-#### ft_list_size:
-```c
-int ft_list_size(t_list *begin_list);
-```
-The `ft_list_size()` function returns the number of elements in the list.
-
----
-
-#### ft_list_sort:
-```c
-void ft_list_sort(t_list **begin_list, int (*cmp)());
-```
-The `ft_list_sort()` function sorts the list’s elements by ascending order using the function `cmp` to compare data.
-
----
-
-#### ft_list_remove_if:
-```c
-void ft_list_remove_if(t_list **begin_list, void *data_ref, int (*cmp)(), void (*free_fct)(void *));
-```
-The `ft_list_remove_if()` function removes all elements from the list that are equal to `data_ref` using the function `cmp` and frees the corresponding element’s memory using the function `free_fct`.
+- `ft_list_remove_if`:
+	```c
+	void ft_list_remove_if(t_list **begin_list, void *data_ref, int (*cmp)(), void (*free_fct)(void *));
+	```
+	The `ft_list_remove_if()` function removes all elements from the list that are equal to `data_ref` using the function `cmp` and frees the corresponding element’s memory using the function `free_fct`.
 
 ## IV. Build project
 
